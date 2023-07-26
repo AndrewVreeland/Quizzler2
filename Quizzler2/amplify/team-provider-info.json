@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-quizzler2-dev-173418-authRole",
+      "UnauthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-173418-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-173418-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-quizzler2-dev-173418-deployment",
+      "UnauthRoleName": "amplify-quizzler2-dev-173418-unauthRole",
+      "StackName": "amplify-quizzler2-dev-173418",
+      "StackId": "arn:aws:cloudformation:us-east-2:612998444197:stack/amplify-quizzler2-dev-173418/2e9713f0-2bfc-11ee-87b7-0292459d3d7d",
+      "AmplifyAppId": "d2yrvmfv8dzero"
+    },
+    "categories": {
+      "api": {
+        "quizzler2": {}
+      }
+    }
+  }
+}
