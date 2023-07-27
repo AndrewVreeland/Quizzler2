@@ -1,19 +1,18 @@
 # this is an auto generated file. This will be overwritten
 
-mutation CreateBlog(
-  $input: CreateBlogInput!
-  $condition: ModelBlogConditionInput
+mutation CreateUser(
+  $input: CreateUserInput!
+  $condition: ModelUserConditionInput
 ) {
-  createBlog(input: $input, condition: $condition) {
+  createUser(input: $input, condition: $condition) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -25,20 +24,19 @@ mutation CreateBlog(
   }
 }
 
-mutation UpdateBlog(
-  $input: UpdateBlogInput!
-  $condition: ModelBlogConditionInput
+mutation UpdateUser(
+  $input: UpdateUserInput!
+  $condition: ModelUserConditionInput
 ) {
-  updateBlog(input: $input, condition: $condition) {
+  updateUser(input: $input, condition: $condition) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -50,20 +48,19 @@ mutation UpdateBlog(
   }
 }
 
-mutation DeleteBlog(
-  $input: DeleteBlogInput!
-  $condition: ModelBlogConditionInput
+mutation DeleteUser(
+  $input: DeleteUserInput!
+  $condition: ModelUserConditionInput
 ) {
-  deleteBlog(input: $input, condition: $condition) {
+  deleteUser(input: $input, condition: $condition) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -75,17 +72,17 @@ mutation DeleteBlog(
   }
 }
 
-mutation CreatePost(
-  $input: CreatePostInput!
-  $condition: ModelPostConditionInput
+mutation CreateConversation(
+  $input: CreateConversationInput!
+  $condition: ModelConversationConditionInput
 ) {
-  createPost(input: $input, condition: $condition) {
+  createConversation(input: $input, condition: $condition) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -93,13 +90,13 @@ mutation CreatePost(
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -107,22 +104,21 @@ mutation CreatePost(
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-mutation UpdatePost(
-  $input: UpdatePostInput!
-  $condition: ModelPostConditionInput
+mutation UpdateConversation(
+  $input: UpdateConversationInput!
+  $condition: ModelConversationConditionInput
 ) {
-  updatePost(input: $input, condition: $condition) {
+  updateConversation(input: $input, condition: $condition) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -130,13 +126,13 @@ mutation UpdatePost(
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -144,22 +140,21 @@ mutation UpdatePost(
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-mutation DeletePost(
-  $input: DeletePostInput!
-  $condition: ModelPostConditionInput
+mutation DeleteConversation(
+  $input: DeleteConversationInput!
+  $condition: ModelConversationConditionInput
 ) {
-  deletePost(input: $input, condition: $condition) {
+  deleteConversation(input: $input, condition: $condition) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -167,13 +162,13 @@ mutation DeletePost(
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -181,106 +176,102 @@ mutation DeletePost(
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-mutation CreateComment(
-  $input: CreateCommentInput!
-  $condition: ModelCommentConditionInput
+mutation CreateMessage(
+  $input: CreateMessageInput!
+  $condition: ModelMessageConditionInput
 ) {
-  createComment(input: $input, condition: $condition) {
+  createMessage(input: $input, condition: $condition) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
 
-mutation UpdateComment(
-  $input: UpdateCommentInput!
-  $condition: ModelCommentConditionInput
+mutation UpdateMessage(
+  $input: UpdateMessageInput!
+  $condition: ModelMessageConditionInput
 ) {
-  updateComment(input: $input, condition: $condition) {
+  updateMessage(input: $input, condition: $condition) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
 
-mutation DeleteComment(
-  $input: DeleteCommentInput!
-  $condition: ModelCommentConditionInput
+mutation DeleteMessage(
+  $input: DeleteMessageInput!
+  $condition: ModelMessageConditionInput
 ) {
-  deleteComment(input: $input, condition: $condition) {
+  deleteMessage(input: $input, condition: $condition) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }

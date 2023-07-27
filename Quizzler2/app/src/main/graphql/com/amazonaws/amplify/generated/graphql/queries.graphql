@@ -1,16 +1,15 @@
 # this is an auto generated file. This will be overwritten
 
-query GetBlog($id: ID!) {
-  getBlog(id: $id) {
+query GetUser($id: ID!) {
+  getUser(id: $id) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -22,16 +21,16 @@ query GetBlog($id: ID!) {
   }
 }
 
-query ListBlogs(
-  $filter: ModelBlogFilterInput
+query ListUsers(
+  $filter: ModelUserFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listBlogs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -44,14 +43,14 @@ query ListBlogs(
   }
 }
 
-query GetPost($id: ID!) {
-  getPost(id: $id) {
+query GetConversation($id: ID!) {
+  getConversation(id: $id) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -59,13 +58,13 @@ query GetPost($id: ID!) {
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -73,34 +72,32 @@ query GetPost($id: ID!) {
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-query ListPosts(
-  $filter: ModelPostFilterInput
+query ListConversations(
+  $filter: ModelConversationFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listConversations(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
     nextToken
@@ -108,56 +105,129 @@ query ListPosts(
   }
 }
 
-query GetComment($id: ID!) {
-  getComment(id: $id) {
+query GetMessage($id: ID!) {
+  getMessage(id: $id) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
 
-query ListComments(
-  $filter: ModelCommentFilterInput
+query ListMessages(
+  $filter: ModelMessageFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      post {
+      conversationID
+      content
+      conversation {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
-      content
       createdAt
       updatedAt
-      postCommentsId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query ConversationsByUserIDAndId(
+  $userID: ID!
+  $id: ModelIDKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelConversationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  conversationsByUserIDAndId(
+    userID: $userID
+    id: $id
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userID
+      user {
+        id
+        username
+        createdAt
+        updatedAt
+        __typename
+      }
+      messages {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+
+query MessagesByConversationIDAndContent(
+  $conversationID: ID!
+  $content: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelMessageFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  messagesByConversationIDAndContent(
+    conversationID: $conversationID
+    content: $content
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      conversationID
+      content
+      conversation {
+        id
+        userID
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
       __typename
     }
     nextToken

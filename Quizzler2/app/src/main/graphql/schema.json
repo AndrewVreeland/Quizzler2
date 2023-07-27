@@ -134,7 +134,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "Blog",
+                "name": "User",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -155,7 +155,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "args": [],
                         "type": {
@@ -171,15 +171,27 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "posts",
+                        "name": "conversations",
                         "description": null,
                         "args": [
+                            {
+                                "name": "id",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelIDKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
                             {
                                 "name": "filter",
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelPostFilterInput",
+                                    "name": "ModelConversationFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -225,7 +237,7 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "ModelPostConnection",
+                            "name": "ModelConversationConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -304,7 +316,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "Post",
+                "name": "Conversation",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -325,7 +337,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "title",
+                        "name": "userID",
                         "description": null,
                         "args": [],
                         "type": {
@@ -333,7 +345,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "String",
+                                "name": "ID",
                                 "ofType": null
                             }
                         },
@@ -341,27 +353,39 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "blog",
+                        "name": "user",
                         "description": null,
                         "args": [],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "comments",
+                        "name": "messages",
                         "description": null,
                         "args": [
+                            {
+                                "name": "content",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelStringKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
                             {
                                 "name": "filter",
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelCommentFilterInput",
+                                    "name": "ModelMessageFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -407,7 +431,7 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "ModelCommentConnection",
+                            "name": "ModelMessageConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -444,18 +468,6 @@
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
-                    },
-                    {
-                        "name": "blogPostsId",
-                        "description": null,
-                        "args": [],
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "ID",
-                            "ofType": null
-                        },
-                        "isDeprecated": false,
-                        "deprecationReason": null
                     }
                 ],
                 "inputFields": null,
@@ -465,7 +477,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "Comment",
+                "name": "Message",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -486,13 +498,17 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "post",
+                        "name": "conversationID",
                         "description": null,
                         "args": [],
                         "type": {
-                            "kind": "OBJECT",
-                            "name": "Post",
-                            "ofType": null
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                            }
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
@@ -514,6 +530,18 @@
                         "deprecationReason": null
                     },
                     {
+                        "name": "conversation",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "Conversation",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
                         "name": "createdAt",
                         "description": null,
                         "args": [],
@@ -541,18 +569,6 @@
                                 "name": "AWSDateTime",
                                 "ofType": null
                             }
-                        },
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "postCommentsId",
-                        "description": null,
-                        "args": [],
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "ID",
-                            "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
@@ -2071,7 +2087,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "ModelBlogConnection",
+                "name": "ModelUserConnection",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -2087,7 +2103,7 @@
                                 "name": null,
                                 "ofType": {
                                     "kind": "OBJECT",
-                                    "name": "Blog",
+                                    "name": "User",
                                     "ofType": null
                                 }
                             }
@@ -2115,7 +2131,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelBlogFilterInput",
+                "name": "ModelUserFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -2133,7 +2149,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -2152,7 +2168,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelBlogFilterInput",
+                                "name": "ModelUserFilterInput",
                                 "ofType": null
                             }
                         },
@@ -2168,7 +2184,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelBlogFilterInput",
+                                "name": "ModelUserFilterInput",
                                 "ofType": null
                             }
                         },
@@ -2181,7 +2197,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelBlogFilterInput",
+                            "name": "ModelUserFilterInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -2200,7 +2216,7 @@
                 "specifiedByUrl": null,
                 "fields": [
                     {
-                        "name": "getBlog",
+                        "name": "getUser",
                         "description": null,
                         "args": [
                             {
@@ -2222,14 +2238,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "listBlogs",
+                        "name": "listUsers",
                         "description": null,
                         "args": [
                             {
@@ -2237,7 +2253,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelBlogFilterInput",
+                                    "name": "ModelUserFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2271,14 +2287,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "ModelBlogConnection",
+                            "name": "ModelUserConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "getPost",
+                        "name": "getConversation",
                         "description": null,
                         "args": [
                             {
@@ -2300,14 +2316,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "listPosts",
+                        "name": "listConversations",
                         "description": null,
                         "args": [
                             {
@@ -2315,7 +2331,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelPostFilterInput",
+                                    "name": "ModelConversationFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2349,14 +2365,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "ModelPostConnection",
+                            "name": "ModelConversationConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "getComment",
+                        "name": "getMessage",
                         "description": null,
                         "args": [
                             {
@@ -2378,14 +2394,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "listComments",
+                        "name": "listMessages",
                         "description": null,
                         "args": [
                             {
@@ -2393,7 +2409,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelCommentFilterInput",
+                                    "name": "ModelMessageFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2427,7 +2443,185 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "ModelCommentConnection",
+                            "name": "ModelMessageConnection",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationsByUserIDAndId",
+                        "description": null,
+                        "args": [
+                            {
+                                "name": "userID",
+                                "description": null,
+                                "type": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "SCALAR",
+                                        "name": "ID",
+                                        "ofType": null
+                                    }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "id",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelIDKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "sortDirection",
+                                "description": null,
+                                "type": {
+                                    "kind": "ENUM",
+                                    "name": "ModelSortDirection",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "filter",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelConversationFilterInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "limit",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "nextToken",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            }
+                        ],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "ModelConversationConnection",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "messagesByConversationIDAndContent",
+                        "description": null,
+                        "args": [
+                            {
+                                "name": "conversationID",
+                                "description": null,
+                                "type": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "SCALAR",
+                                        "name": "ID",
+                                        "ofType": null
+                                    }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "content",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelStringKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "sortDirection",
+                                "description": null,
+                                "type": {
+                                    "kind": "ENUM",
+                                    "name": "ModelSortDirection",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "filter",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelMessageFilterInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "limit",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "nextToken",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            }
+                        ],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "ModelMessageConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -2441,13 +2635,13 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelBlogConditionInput",
+                "name": "ModelUserConditionInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
                 "inputFields": [
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -2466,7 +2660,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelBlogConditionInput",
+                                "name": "ModelUserConditionInput",
                                 "ofType": null
                             }
                         },
@@ -2482,7 +2676,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelBlogConditionInput",
+                                "name": "ModelUserConditionInput",
                                 "ofType": null
                             }
                         },
@@ -2495,7 +2689,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelBlogConditionInput",
+                            "name": "ModelUserConditionInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -2509,7 +2703,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "CreateBlogInput",
+                "name": "CreateUserInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -2527,7 +2721,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "type": {
                             "kind": "NON_NULL",
@@ -2549,7 +2743,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "UpdateBlogInput",
+                "name": "UpdateUserInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -2571,7 +2765,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "type": {
                             "kind": "SCALAR",
@@ -2589,7 +2783,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "DeleteBlogInput",
+                "name": "DeleteUserInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -2622,7 +2816,7 @@
                 "specifiedByUrl": null,
                 "fields": [
                     {
-                        "name": "createBlog",
+                        "name": "createUser",
                         "description": null,
                         "args": [
                             {
@@ -2633,7 +2827,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "CreateBlogInput",
+                                        "name": "CreateUserInput",
                                         "ofType": null
                                     }
                                 },
@@ -2646,7 +2840,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelBlogConditionInput",
+                                    "name": "ModelUserConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2656,14 +2850,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "updateBlog",
+                        "name": "updateUser",
                         "description": null,
                         "args": [
                             {
@@ -2674,7 +2868,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "UpdateBlogInput",
+                                        "name": "UpdateUserInput",
                                         "ofType": null
                                     }
                                 },
@@ -2687,7 +2881,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelBlogConditionInput",
+                                    "name": "ModelUserConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2697,14 +2891,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "deleteBlog",
+                        "name": "deleteUser",
                         "description": null,
                         "args": [
                             {
@@ -2715,7 +2909,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "DeleteBlogInput",
+                                        "name": "DeleteUserInput",
                                         "ofType": null
                                     }
                                 },
@@ -2728,7 +2922,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelBlogConditionInput",
+                                    "name": "ModelUserConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2738,14 +2932,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "createPost",
+                        "name": "createConversation",
                         "description": null,
                         "args": [
                             {
@@ -2756,7 +2950,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "CreatePostInput",
+                                        "name": "CreateConversationInput",
                                         "ofType": null
                                     }
                                 },
@@ -2769,7 +2963,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelPostConditionInput",
+                                    "name": "ModelConversationConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2779,14 +2973,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "updatePost",
+                        "name": "updateConversation",
                         "description": null,
                         "args": [
                             {
@@ -2797,7 +2991,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "UpdatePostInput",
+                                        "name": "UpdateConversationInput",
                                         "ofType": null
                                     }
                                 },
@@ -2810,7 +3004,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelPostConditionInput",
+                                    "name": "ModelConversationConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2820,14 +3014,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "deletePost",
+                        "name": "deleteConversation",
                         "description": null,
                         "args": [
                             {
@@ -2838,7 +3032,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "DeletePostInput",
+                                        "name": "DeleteConversationInput",
                                         "ofType": null
                                     }
                                 },
@@ -2851,7 +3045,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelPostConditionInput",
+                                    "name": "ModelConversationConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2861,14 +3055,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "createComment",
+                        "name": "createMessage",
                         "description": null,
                         "args": [
                             {
@@ -2879,7 +3073,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "CreateCommentInput",
+                                        "name": "CreateMessageInput",
                                         "ofType": null
                                     }
                                 },
@@ -2892,7 +3086,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelCommentConditionInput",
+                                    "name": "ModelMessageConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2902,14 +3096,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "updateComment",
+                        "name": "updateMessage",
                         "description": null,
                         "args": [
                             {
@@ -2920,7 +3114,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "UpdateCommentInput",
+                                        "name": "UpdateMessageInput",
                                         "ofType": null
                                     }
                                 },
@@ -2933,7 +3127,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelCommentConditionInput",
+                                    "name": "ModelMessageConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2943,14 +3137,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "deleteComment",
+                        "name": "deleteMessage",
                         "description": null,
                         "args": [
                             {
@@ -2961,7 +3155,7 @@
                                     "name": null,
                                     "ofType": {
                                         "kind": "INPUT_OBJECT",
-                                        "name": "DeleteCommentInput",
+                                        "name": "DeleteMessageInput",
                                         "ofType": null
                                     }
                                 },
@@ -2974,7 +3168,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelCommentConditionInput",
+                                    "name": "ModelMessageConditionInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -2984,7 +3178,7 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -2998,7 +3192,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelSubscriptionBlogFilterInput",
+                "name": "ModelSubscriptionUserFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3016,7 +3210,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "name",
+                        "name": "username",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -3035,7 +3229,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionBlogFilterInput",
+                                "name": "ModelSubscriptionUserFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3051,7 +3245,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionBlogFilterInput",
+                                "name": "ModelSubscriptionUserFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3071,7 +3265,7 @@
                 "specifiedByUrl": null,
                 "fields": [
                     {
-                        "name": "onCreateBlog",
+                        "name": "onCreateUser",
                         "description": null,
                         "args": [
                             {
@@ -3079,7 +3273,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionBlogFilterInput",
+                                    "name": "ModelSubscriptionUserFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3089,14 +3283,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onUpdateBlog",
+                        "name": "onUpdateUser",
                         "description": null,
                         "args": [
                             {
@@ -3104,7 +3298,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionBlogFilterInput",
+                                    "name": "ModelSubscriptionUserFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3114,14 +3308,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onDeleteBlog",
+                        "name": "onDeleteUser",
                         "description": null,
                         "args": [
                             {
@@ -3129,7 +3323,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionBlogFilterInput",
+                                    "name": "ModelSubscriptionUserFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3139,14 +3333,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Blog",
+                            "name": "User",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onCreatePost",
+                        "name": "onCreateConversation",
                         "description": null,
                         "args": [
                             {
@@ -3154,7 +3348,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionPostFilterInput",
+                                    "name": "ModelSubscriptionConversationFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3164,14 +3358,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onUpdatePost",
+                        "name": "onUpdateConversation",
                         "description": null,
                         "args": [
                             {
@@ -3179,7 +3373,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionPostFilterInput",
+                                    "name": "ModelSubscriptionConversationFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3189,14 +3383,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onDeletePost",
+                        "name": "onDeleteConversation",
                         "description": null,
                         "args": [
                             {
@@ -3204,7 +3398,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionPostFilterInput",
+                                    "name": "ModelSubscriptionConversationFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3214,14 +3408,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Post",
+                            "name": "Conversation",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onCreateComment",
+                        "name": "onCreateMessage",
                         "description": null,
                         "args": [
                             {
@@ -3229,7 +3423,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionCommentFilterInput",
+                                    "name": "ModelSubscriptionMessageFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3239,14 +3433,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onUpdateComment",
+                        "name": "onUpdateMessage",
                         "description": null,
                         "args": [
                             {
@@ -3254,7 +3448,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionCommentFilterInput",
+                                    "name": "ModelSubscriptionMessageFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3264,14 +3458,14 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
                         "deprecationReason": null
                     },
                     {
-                        "name": "onDeleteComment",
+                        "name": "onDeleteMessage",
                         "description": null,
                         "args": [
                             {
@@ -3279,7 +3473,7 @@
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
-                                    "name": "ModelSubscriptionCommentFilterInput",
+                                    "name": "ModelSubscriptionMessageFilterInput",
                                     "ofType": null
                                 },
                                 "defaultValue": null,
@@ -3289,7 +3483,7 @@
                         ],
                         "type": {
                             "kind": "OBJECT",
-                            "name": "Comment",
+                            "name": "Message",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -3303,7 +3497,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "ModelPostConnection",
+                "name": "ModelConversationConnection",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -3319,7 +3513,7 @@
                                 "name": null,
                                 "ofType": {
                                     "kind": "OBJECT",
-                                    "name": "Post",
+                                    "name": "Conversation",
                                     "ofType": null
                                 }
                             }
@@ -3347,7 +3541,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelPostFilterInput",
+                "name": "ModelConversationFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3365,11 +3559,11 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "title",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelStringInput",
+                            "name": "ModelIDInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3384,7 +3578,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelPostFilterInput",
+                                "name": "ModelConversationFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3400,7 +3594,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelPostFilterInput",
+                                "name": "ModelConversationFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3413,19 +3607,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelPostFilterInput",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "blogPostsId",
-                        "description": null,
-                        "type": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "ModelIDInput",
+                            "name": "ModelConversationFilterInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3439,17 +3621,17 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelPostConditionInput",
+                "name": "ModelConversationConditionInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
                 "inputFields": [
                     {
-                        "name": "title",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelStringInput",
+                            "name": "ModelIDInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3464,7 +3646,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelPostConditionInput",
+                                "name": "ModelConversationConditionInput",
                                 "ofType": null
                             }
                         },
@@ -3480,7 +3662,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelPostConditionInput",
+                                "name": "ModelConversationConditionInput",
                                 "ofType": null
                             }
                         },
@@ -3493,19 +3675,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelPostConditionInput",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "blogPostsId",
-                        "description": null,
-                        "type": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "ModelIDInput",
+                            "name": "ModelConversationConditionInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3519,7 +3689,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "CreatePostInput",
+                "name": "CreateConversationInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3537,28 +3707,16 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "title",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "String",
+                                "name": "ID",
                                 "ofType": null
                             }
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "blogPostsId",
-                        "description": null,
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "ID",
-                            "ofType": null
                         },
                         "defaultValue": null,
                         "isDeprecated": false,
@@ -3571,7 +3729,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "UpdatePostInput",
+                "name": "UpdateConversationInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3593,19 +3751,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "title",
-                        "description": null,
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "blogPostsId",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "SCALAR",
@@ -3623,7 +3769,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "DeletePostInput",
+                "name": "DeleteConversationInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3651,7 +3797,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelSubscriptionPostFilterInput",
+                "name": "ModelSubscriptionConversationFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3669,11 +3815,11 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "title",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelSubscriptionStringInput",
+                            "name": "ModelSubscriptionIDInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3688,7 +3834,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionPostFilterInput",
+                                "name": "ModelSubscriptionConversationFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3704,7 +3850,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionPostFilterInput",
+                                "name": "ModelSubscriptionConversationFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3719,7 +3865,7 @@
             },
             {
                 "kind": "OBJECT",
-                "name": "ModelCommentConnection",
+                "name": "ModelMessageConnection",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": [
@@ -3735,7 +3881,7 @@
                                 "name": null,
                                 "ofType": {
                                     "kind": "OBJECT",
-                                    "name": "Comment",
+                                    "name": "Message",
                                     "ofType": null
                                 }
                             }
@@ -3763,7 +3909,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelCommentFilterInput",
+                "name": "ModelMessageFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3781,6 +3927,18 @@
                         "deprecationReason": null
                     },
                     {
+                        "name": "conversationID",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
                         "name": "content",
                         "description": null,
                         "type": {
@@ -3800,7 +3958,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelCommentFilterInput",
+                                "name": "ModelMessageFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3816,7 +3974,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelCommentFilterInput",
+                                "name": "ModelMessageFilterInput",
                                 "ofType": null
                             }
                         },
@@ -3829,19 +3987,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelCommentFilterInput",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "postCommentsId",
-                        "description": null,
-                        "type": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "ModelIDInput",
+                            "name": "ModelMessageFilterInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3855,12 +4001,24 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelCommentConditionInput",
+                "name": "ModelMessageConditionInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
                 "inputFields": [
                     {
+                        "name": "conversationID",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
                         "name": "content",
                         "description": null,
                         "type": {
@@ -3880,7 +4038,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelCommentConditionInput",
+                                "name": "ModelMessageConditionInput",
                                 "ofType": null
                             }
                         },
@@ -3896,7 +4054,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelCommentConditionInput",
+                                "name": "ModelMessageConditionInput",
                                 "ofType": null
                             }
                         },
@@ -3909,19 +4067,7 @@
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
-                            "name": "ModelCommentConditionInput",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
-                        "name": "postCommentsId",
-                        "description": null,
-                        "type": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "ModelIDInput",
+                            "name": "ModelMessageConditionInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3935,7 +4081,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "CreateCommentInput",
+                "name": "CreateMessageInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -3947,6 +4093,22 @@
                             "kind": "SCALAR",
                             "name": "ID",
                             "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationID",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                            }
                         },
                         "defaultValue": null,
                         "isDeprecated": false,
@@ -3967,18 +4129,6 @@
                         "defaultValue": null,
                         "isDeprecated": false,
                         "deprecationReason": null
-                    },
-                    {
-                        "name": "postCommentsId",
-                        "description": null,
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "ID",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
                     }
                 ],
                 "interfaces": null,
@@ -3987,7 +4137,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "UpdateCommentInput",
+                "name": "UpdateMessageInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -4003,6 +4153,18 @@
                                 "name": "ID",
                                 "ofType": null
                             }
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationID",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
                         },
                         "defaultValue": null,
                         "isDeprecated": false,
@@ -4019,18 +4181,6 @@
                         "defaultValue": null,
                         "isDeprecated": false,
                         "deprecationReason": null
-                    },
-                    {
-                        "name": "postCommentsId",
-                        "description": null,
-                        "type": {
-                            "kind": "SCALAR",
-                            "name": "ID",
-                            "ofType": null
-                        },
-                        "defaultValue": null,
-                        "isDeprecated": false,
-                        "deprecationReason": null
                     }
                 ],
                 "interfaces": null,
@@ -4039,7 +4189,7 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "DeleteCommentInput",
+                "name": "DeleteMessageInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
@@ -4067,13 +4217,25 @@
             },
             {
                 "kind": "INPUT_OBJECT",
-                "name": "ModelSubscriptionCommentFilterInput",
+                "name": "ModelSubscriptionMessageFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
                 "fields": null,
                 "inputFields": [
                     {
                         "name": "id",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelSubscriptionIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationID",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4104,7 +4266,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionCommentFilterInput",
+                                "name": "ModelSubscriptionMessageFilterInput",
                                 "ofType": null
                             }
                         },
@@ -4120,9 +4282,209 @@
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "ModelSubscriptionCommentFilterInput",
+                                "name": "ModelSubscriptionMessageFilterInput",
                                 "ofType": null
                             }
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "ModelIDKeyConditionInput",
+                "description": null,
+                "specifiedByUrl": null,
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "eq",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "le",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "lt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "ge",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "gt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "between",
+                        "description": null,
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "ID",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "beginsWith",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "ModelStringKeyConditionInput",
+                "description": null,
+                "specifiedByUrl": null,
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "eq",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "le",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "lt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "ge",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "gt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "between",
+                        "description": null,
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "beginsWith",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
                         },
                         "defaultValue": null,
                         "isDeprecated": false,

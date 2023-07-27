@@ -1,16 +1,15 @@
 # this is an auto generated file. This will be overwritten
 
-subscription OnCreateBlog($filter: ModelSubscriptionBlogFilterInput) {
-  onCreateBlog(filter: $filter) {
+subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
+  onCreateUser(filter: $filter) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -22,17 +21,16 @@ subscription OnCreateBlog($filter: ModelSubscriptionBlogFilterInput) {
   }
 }
 
-subscription OnUpdateBlog($filter: ModelSubscriptionBlogFilterInput) {
-  onUpdateBlog(filter: $filter) {
+subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
+  onUpdateUser(filter: $filter) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -44,17 +42,16 @@ subscription OnUpdateBlog($filter: ModelSubscriptionBlogFilterInput) {
   }
 }
 
-subscription OnDeleteBlog($filter: ModelSubscriptionBlogFilterInput) {
-  onDeleteBlog(filter: $filter) {
+subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
+  onDeleteUser(filter: $filter) {
     id
-    name
-    posts {
+    username
+    conversations {
       items {
         id
-        title
+        userID
         createdAt
         updatedAt
-        blogPostsId
         __typename
       }
       nextToken
@@ -66,14 +63,16 @@ subscription OnDeleteBlog($filter: ModelSubscriptionBlogFilterInput) {
   }
 }
 
-subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
-  onCreatePost(filter: $filter) {
+subscription OnCreateConversation(
+  $filter: ModelSubscriptionConversationFilterInput
+) {
+  onCreateConversation(filter: $filter) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -81,13 +80,13 @@ subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -95,19 +94,20 @@ subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
-  onUpdatePost(filter: $filter) {
+subscription OnUpdateConversation(
+  $filter: ModelSubscriptionConversationFilterInput
+) {
+  onUpdateConversation(filter: $filter) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -115,13 +115,13 @@ subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -129,19 +129,20 @@ subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
-  onDeletePost(filter: $filter) {
+subscription OnDeleteConversation(
+  $filter: ModelSubscriptionConversationFilterInput
+) {
+  onDeleteConversation(filter: $filter) {
     id
-    title
-    blog {
+    userID
+    user {
       id
-      name
-      posts {
+      username
+      conversations {
         nextToken
         __typename
       }
@@ -149,13 +150,13 @@ subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
       updatedAt
       __typename
     }
-    comments {
+    messages {
       items {
         id
+        conversationID
         content
         createdAt
         updatedAt
-        postCommentsId
         __typename
       }
       nextToken
@@ -163,97 +164,93 @@ subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
     }
     createdAt
     updatedAt
-    blogPostsId
     __typename
   }
 }
 
-subscription OnCreateComment($filter: ModelSubscriptionCommentFilterInput) {
-  onCreateComment(filter: $filter) {
+subscription OnCreateMessage($filter: ModelSubscriptionMessageFilterInput) {
+  onCreateMessage(filter: $filter) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
 
-subscription OnUpdateComment($filter: ModelSubscriptionCommentFilterInput) {
-  onUpdateComment(filter: $filter) {
+subscription OnUpdateMessage($filter: ModelSubscriptionMessageFilterInput) {
+  onUpdateMessage(filter: $filter) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
 
-subscription OnDeleteComment($filter: ModelSubscriptionCommentFilterInput) {
-  onDeleteComment(filter: $filter) {
+subscription OnDeleteMessage($filter: ModelSubscriptionMessageFilterInput) {
+  onDeleteMessage(filter: $filter) {
     id
-    post {
+    conversationID
+    content
+    conversation {
       id
-      title
-      blog {
+      userID
+      user {
         id
-        name
+        username
         createdAt
         updatedAt
         __typename
       }
-      comments {
+      messages {
         nextToken
         __typename
       }
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
-    content
     createdAt
     updatedAt
-    postCommentsId
     __typename
   }
 }
