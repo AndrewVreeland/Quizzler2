@@ -17,7 +17,6 @@ type Conversation @model {
 
 type Message @model {
   id: ID!
-
   conversationID: ID! @index(name: "byMessage", sortKeyFields: ["content"])
   content: String!
   conversation: Conversation @belongsTo(fields: ["conversationID"])

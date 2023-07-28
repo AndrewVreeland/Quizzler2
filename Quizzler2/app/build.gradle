@@ -6,6 +6,9 @@ android {
     namespace 'com.study.quizzler2'
     compileSdk 33
 
+    packagingOptions {
+        exclude 'META-INF/INDEX.LIST'
+    }
     defaultConfig {
         applicationId "com.study.quizzler2"
         minSdk 24
@@ -15,6 +18,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         release {
@@ -37,4 +41,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation 'com.amplifyframework:aws-api:2.8.4'
+    implementation 'com.amplifyframework:aws-datastore:2.8.4'
+    implementation 'com.amplifyframework:core:2.8.7'
+    implementation 'com.amplifyframework:aws-auth-cognito:2.8.4'
+    implementation 'software.amazon.awssdk:dynamodb:2.15.37'
 }
