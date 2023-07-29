@@ -353,6 +353,18 @@
                         "deprecationReason": null
                     },
                     {
+                        "name": "conversationType",
+                        "description": null,
+                        "args": [],
+                        "type": {
+                            "kind": "ENUM",
+                            "name": "ConversationTypeEnum",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
                         "name": "user",
                         "description": null,
                         "args": [],
@@ -577,6 +589,42 @@
                 "inputFields": null,
                 "interfaces": [],
                 "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "ENUM",
+                "name": "ConversationTypeEnum",
+                "description": null,
+                "specifiedByUrl": null,
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": [
+                    {
+                        "name": "Music",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "Animals",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "Games",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "History",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
                 "possibleTypes": null
             },
             {
@@ -3541,6 +3589,42 @@
             },
             {
                 "kind": "INPUT_OBJECT",
+                "name": "ModelConversationTypeEnumInput",
+                "description": null,
+                "specifiedByUrl": null,
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "eq",
+                        "description": null,
+                        "type": {
+                            "kind": "ENUM",
+                            "name": "ConversationTypeEnum",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "ne",
+                        "description": null,
+                        "type": {
+                            "kind": "ENUM",
+                            "name": "ConversationTypeEnum",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
                 "name": "ModelConversationFilterInput",
                 "description": null,
                 "specifiedByUrl": null,
@@ -3564,6 +3648,18 @@
                         "type": {
                             "kind": "INPUT_OBJECT",
                             "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationType",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelConversationTypeEnumInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3632,6 +3728,18 @@
                         "type": {
                             "kind": "INPUT_OBJECT",
                             "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationType",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelConversationTypeEnumInput",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3721,6 +3829,18 @@
                         "defaultValue": null,
                         "isDeprecated": false,
                         "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationType",
+                        "description": null,
+                        "type": {
+                            "kind": "ENUM",
+                            "name": "ConversationTypeEnum",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     }
                 ],
                 "interfaces": null,
@@ -3756,6 +3876,18 @@
                         "type": {
                             "kind": "SCALAR",
                             "name": "ID",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationType",
+                        "description": null,
+                        "type": {
+                            "kind": "ENUM",
+                            "name": "ConversationTypeEnum",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -3820,6 +3952,18 @@
                         "type": {
                             "kind": "INPUT_OBJECT",
                             "name": "ModelSubscriptionIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "conversationType",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelSubscriptionStringInput",
                             "ofType": null
                         },
                         "defaultValue": null,

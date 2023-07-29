@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.study.quizzler2.MainActivity;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.Config;
@@ -29,7 +28,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -106,7 +104,7 @@ public class ChatFragment extends Fragment {
             jsonBody.put("model", "text-davinci-003");
             jsonBody.put("prompt", question);
             jsonBody.put("max_tokens", 4000);
-            jsonBody.put("temperature", 0);
+            jsonBody.put("temperature", 1);
 
         } catch (JSONException e) {
             throw new RuntimeException(e);

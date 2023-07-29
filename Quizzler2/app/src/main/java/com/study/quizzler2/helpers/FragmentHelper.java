@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.study.quizzler2.R;
 import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
+import com.study.quizzler2.managers.ChatGPTManager;
 
 public class FragmentHelper {
 
@@ -23,33 +24,50 @@ public class FragmentHelper {
                     switch (index) {
                         case 0:
                             // Replace the current fragment with the HomeFragment
-                            listener.updateText("Home Fragment Text");
-                            activateButton(fragmentManager, fragmentView);
+                            generateRandomFactAndActivateButton(fragmentManager, "Science", fragmentView, listener);
                             break;
                         case 1:
                             // Replace the current fragment with the AnimalsFragment
-                            listener.updateText("Animals Fragment Text");
-                            activateButton(fragmentManager, fragmentView);
+                            generateRandomFactAndActivateButton(fragmentManager, "Animals", fragmentView, listener);
                             break;
                         case 2:
                             // Replace the current fragment with the HistoryFragment
-                            listener.updateText("History Fragment Text");
-                            activateButton(fragmentManager, fragmentView);
+                            generateRandomFactAndActivateButton(fragmentManager, "History", fragmentView, listener);
                             break;
                         case 3:
                             // Replace the current fragment with the GamesFragment
-                            listener.updateText("Games Fragment Text");
-                            activateButton(fragmentManager, fragmentView);
+                            generateRandomFactAndActivateButton(fragmentManager, "Games", fragmentView, listener);
                             break;
                         case 4:
                             // Replace the current fragment with the MusicFragment
-                            listener.updateText("Music Fragment Text");
-                            activateButton(fragmentManager, fragmentView);
+                            generateRandomFactAndActivateButton(fragmentManager, "Music", fragmentView, listener);
                             break;
                     }
                 }
             }
         }, DELAY_MILLISECONDS);
+    }
+
+    private static void generateRandomFactAndActivateButton(FragmentManager fragmentManager, String topic, View fragmentView, updateTriviaTextInterface.OnTextUpdateListener listener) {
+        // Generate a random fact for the provided topic
+        ChatGPTManager.generateRandomFact(TopicUtility.getTopicIndex(topic), fragmentView.getContext(), new ChatGPTManager.RandomFactListener() {
+            @Override
+            public void onRandomFactGenerated(String randomFact) {
+                // Print the generated fact to the console
+                System.out.println("Generated Random Fact: " + randomFact);
+
+                // Update the text with the random fact on the UI thread
+                fragmentView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null) {
+                            listener.updateText(randomFact);
+                        }
+                        activateButton(fragmentManager, fragmentView);
+                    }
+                });
+            }
+        });
     }
 
     private static void activateButton(FragmentManager fragmentManager, View fragmentView){
@@ -70,4 +88,5 @@ public class FragmentHelper {
             }
         });
     }
+
 }

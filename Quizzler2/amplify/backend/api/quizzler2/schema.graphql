@@ -11,6 +11,7 @@ type User @model {
 type Conversation @model {
   id: ID!
   userID: ID! @index(name: "byConversation", sortKeyFields: ["id"])
+  conversationType: ConversationTypeEnum
   user: User @belongsTo(fields: ["userID"])
   messages: [Message] @hasMany(indexName: "byMessage", fields: ["id"])
 }
@@ -20,4 +21,11 @@ type Message @model {
   conversationID: ID! @index(name: "byMessage", sortKeyFields: ["content"])
   content: String!
   conversation: Conversation @belongsTo(fields: ["conversationID"])
+}
+
+enum ConversationTypeEnum{
+  Music
+  Animals
+  Games
+  History
 }

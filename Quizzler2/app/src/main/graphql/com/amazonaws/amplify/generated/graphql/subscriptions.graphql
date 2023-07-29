@@ -8,6 +8,7 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -29,6 +30,7 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -50,6 +52,7 @@ subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -69,6 +72,7 @@ subscription OnCreateConversation(
   onCreateConversation(filter: $filter) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -104,6 +108,7 @@ subscription OnUpdateConversation(
   onUpdateConversation(filter: $filter) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -139,6 +144,7 @@ subscription OnDeleteConversation(
   onDeleteConversation(filter: $filter) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -176,6 +182,7 @@ subscription OnCreateMessage($filter: ModelSubscriptionMessageFilterInput) {
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -205,6 +212,7 @@ subscription OnUpdateMessage($filter: ModelSubscriptionMessageFilterInput) {
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -234,6 +242,7 @@ subscription OnDeleteMessage($filter: ModelSubscriptionMessageFilterInput) {
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username

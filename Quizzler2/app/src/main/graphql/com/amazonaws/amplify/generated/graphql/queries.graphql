@@ -8,6 +8,7 @@ query GetUser($id: ID!) {
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -47,6 +48,7 @@ query GetConversation($id: ID!) {
   getConversation(id: $id) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -85,6 +87,7 @@ query ListConversations(
     items {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -113,6 +116,7 @@ query GetMessage($id: ID!) {
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -147,6 +151,7 @@ query ListMessages(
       conversation {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -179,6 +184,7 @@ query ConversationsByUserIDAndId(
     items {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -222,6 +228,7 @@ query MessagesByConversationIDAndContent(
       conversation {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename

@@ -11,6 +11,7 @@ mutation CreateUser(
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -35,6 +36,7 @@ mutation UpdateUser(
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -59,6 +61,7 @@ mutation DeleteUser(
       items {
         id
         userID
+        conversationType
         createdAt
         updatedAt
         __typename
@@ -79,6 +82,7 @@ mutation CreateConversation(
   createConversation(input: $input, condition: $condition) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -115,6 +119,7 @@ mutation UpdateConversation(
   updateConversation(input: $input, condition: $condition) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -151,6 +156,7 @@ mutation DeleteConversation(
   deleteConversation(input: $input, condition: $condition) {
     id
     userID
+    conversationType
     user {
       id
       username
@@ -191,6 +197,7 @@ mutation CreateMessage(
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -223,6 +230,7 @@ mutation UpdateMessage(
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
@@ -255,6 +263,7 @@ mutation DeleteMessage(
     conversation {
       id
       userID
+      conversationType
       user {
         id
         username
