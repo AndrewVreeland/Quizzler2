@@ -10,7 +10,6 @@ import android.widget.Button;
 import com.study.quizzler2.R;
 import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
-import com.study.quizzler2.managers.ChatGPTManager;
 
 public class FragmentHelper {
 
@@ -50,7 +49,7 @@ public class FragmentHelper {
 
     private static void generateRandomFactAndActivateButton(FragmentManager fragmentManager, String topic, View fragmentView, updateTriviaTextInterface.OnTextUpdateListener listener) {
         // Generate a random fact for the provided topic
-        ChatGPTManager.generateRandomFact(TopicUtility.getTopicIndex(topic), fragmentView.getContext(), new ChatGPTManager.RandomFactListener() {
+        ChatGPTRandomFact.generateRandomFact(TopicUtility.getTopicIndex(topic), fragmentView.getContext(), new ChatGPTRandomFact.RandomFactListener() {
             @Override
             public void onRandomFactGenerated(String randomFact) {
                 // Print the generated fact to the console
@@ -63,14 +62,14 @@ public class FragmentHelper {
                         if (listener != null) {
                             listener.updateText(randomFact);
                         }
-                        activateButton(fragmentManager, fragmentView);
+                        activateButton(fragmentManager, fragmentView, randomFact); // Pass the random fact to the activateButton method
                     }
                 });
             }
         });
     }
 
-    private static void activateButton(FragmentManager fragmentManager, View fragmentView){
+    private static void activateButton(FragmentManager fragmentManager, View fragmentView, String randomFact) {
         // Update the button visibility and functionality
         Button yourButton = fragmentView.findViewById(R.id.learn_more_btn);
         yourButton.setVisibility(View.VISIBLE); // Make the button visible
@@ -82,7 +81,8 @@ public class FragmentHelper {
             public void onClick(View v) {
                 // Handle the fragment transaction when the button is clicked
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new ChatFragment());
+                ChatFragment chatFragment = ChatFragment.newInstance("I want to learn more about " + randomFact);
+                fragmentTransaction.replace(R.id.fragment_container, chatFragment);
                 fragmentTransaction.addToBackStack(null); // Add the transaction to the back stack
                 fragmentTransaction.commit();
             }

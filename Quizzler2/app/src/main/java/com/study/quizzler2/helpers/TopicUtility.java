@@ -1,20 +1,18 @@
 package com.study.quizzler2.helpers;
 
-import com.study.quizzler2.managers.ChatGPTManager;
-
 public class TopicUtility {
     public static int getTopicIndex(String topic) {
         switch (topic) {
             case "Science":
-                return ChatGPTManager.TOPIC_SCIENCE;
+                return ChatGPTRandomFact.TOPIC_SCIENCE;
             case "Animals":
-                return ChatGPTManager.TOPIC_ANIMALS;
+                return ChatGPTRandomFact.TOPIC_ANIMALS;
             case "History":
-                return ChatGPTManager.TOPIC_HISTORY;
+                return ChatGPTRandomFact.TOPIC_HISTORY;
             case "Games":
-                return ChatGPTManager.TOPIC_GAMES;
+                return ChatGPTRandomFact.TOPIC_GAMES;
             case "Music":
-                return ChatGPTManager.TOPIC_MUSIC;
+                return ChatGPTRandomFact.TOPIC_MUSIC;
             default:
                 return -1; // Invalid index
         }

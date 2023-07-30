@@ -1,4 +1,4 @@
-package com.study.quizzler2.managers;
+package com.study.quizzler2.helpers;
 
 import android.content.Context;
 
@@ -18,7 +18,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ChatGPTManager {
+public class ChatGPTRandomFact {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final OkHttpClient client = new OkHttpClient();

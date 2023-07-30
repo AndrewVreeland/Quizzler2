@@ -14,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.Config;
+import com.study.quizzler2.helpers.DelayUtils;
 import com.study.quizzler2.helpers.Message;
 
 import org.json.JSONArray;
@@ -37,22 +37,30 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
 public class ChatFragment extends Fragment {
+    // Media type for API request and response
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
 
+    private boolean isFirstResponse = true;
     private RecyclerView recyclerView;
-    private TextView welcomeTextView;
     private EditText messageEditText;
     private ImageButton sendButton;
     private List<Message> messageList;
     private MessageAdapter messageAdapter;
 
     OkHttpClient client = new OkHttpClient();
+    private String initialMessage; // Variable to store the initial message
 
     public ChatFragment() {
         // Required empty public constructor
+    }
+
+    // Method to set the initial message when creating the fragment
+    public static ChatFragment newInstance(String initialMessage) {
+        ChatFragment fragment = new ChatFragment();
+        fragment.initialMessage = initialMessage;
+        return fragment;
     }
 
     @Override
@@ -71,6 +79,12 @@ public class ChatFragment extends Fragment {
         messageEditText = view.findViewById(R.id.message_edit_text);
         sendButton = view.findViewById(R.id.send_btn);
 
+        // If there is an initial message, add it to the chat and call the API
+        if (initialMessage != null && !initialMessage.isEmpty()) {
+            addToChat(initialMessage, Message.SENT_BY_ME);
+            callAPI(initialMessage, requireContext());
+        }
+
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
         LinearLayoutManager llm = new LinearLayoutManager(requireContext());
@@ -85,68 +99,101 @@ public class ChatFragment extends Fragment {
         });
     }
 
+    // Method to add a message to the chat
     void addToChat(String message, String sentBy) {
-        messageList.add(new Message(message, sentBy));
-        messageAdapter.notifyDataSetChanged();
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+        // Check if messageAdapter is null before calling notifyDataSetChanged()
+        if (messageAdapter != null) {
+            messageList.add(new Message(message, sentBy));
+            messageAdapter.notifyDataSetChanged();
+            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+        }
     }
 
-    void addResponse(String response){
-        messageList.remove(messageList.size()-1);
+    // Method to add a response from the API to the chat
+    void addResponse(String response) {
+        messageList.remove(messageList.size() - 1);
+
+        if (isFirstResponse) {
+            // Send the custom greeting message for the first response
+            sendCustomGreetingMessage();
+            isFirstResponse = false; // Set the flag to false after the first response
+
+            // Add a 1-second delay before sending the actual response
+            DelayUtils.delayAction(new Runnable() {
+                @Override
+                public void run() {
+                    sendActualResponse(response.trim());
+                }
+            }, 1000); // 1000 milliseconds = 1 second
+        } else {
+            // Send the actual response from Chat GPT without any delay
+            sendActualResponse(response.trim());
+        }
+    }
+
+    private void sendCustomGreetingMessage() {
+        String greetingMessage = "Hello user, here is the additional information you requested:";
+        addToChat(greetingMessage, Message.SENT_BY_BOT);
+    }
+
+    private void sendActualResponse(String response) {
+        // Send the actual response from Chat GPT
         addToChat(response, Message.SENT_BY_BOT);
     }
 
+    // Method to make the API call to Chat GPT
     void callAPI(String question, Context context) {
-        // Add user's current message to the conversation history
+        // Build the conversation history from previous messages
         StringBuilder conversationHistory = new StringBuilder();
         for (Message message : messageList) {
             if (message.getSentBy().equals(Message.SENT_BY_ME)) {
-                // User's message
                 conversationHistory.append("User: ").append(message.getMessage()).append("\n");
             } else if (message.getSentBy().equals(Message.SENT_BY_BOT)) {
-                // Bot's response
                 conversationHistory.append("Bot: ").append(message.getMessage()).append("\n");
             }
         }
 
-        // Add a marker for the current user's question
+        // Add the current user's question to the conversation history
         conversationHistory.append("User: ").append(question).append("\n");
 
+        // Add a "Typing..." indicator
         messageList.add(new Message("Typing...", Message.SENT_BY_BOT));
 
+        // Prepare the API request JSON
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("model", "text-davinci-003");
-            jsonBody.put("prompt", conversationHistory.toString()); // Include the conversation history
+            jsonBody.put("prompt", conversationHistory.toString());
             jsonBody.put("max_tokens", 4000);
             jsonBody.put("temperature", 1);
-
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
 
         RequestBody body = RequestBody.create(jsonBody.toString(), JSON);
 
+        // Get the API key from Config
         String apiKey = Config.getApiKey(context);
+
+        // Build the API request
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/completions")
                 .header("Authorization", "Bearer " + apiKey)
                 .post(body)
                 .build();
 
+        // Make the API call asynchronously
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                requireActivity().runOnUiThread(() -> addResponse("failed to load response due to " + e.getMessage()));
+                requireActivity().runOnUiThread(() -> addResponse("Failed to load response due to " + e.getMessage()));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    JSONObject jsonObject = null;
-                    JSONObject jsonObject1 = null;
                     try {
-                        jsonObject = new JSONObject(response.body().string());
+                        JSONObject jsonObject = new JSONObject(response.body().string());
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
                         String result = jsonArray.getJSONObject(0).getString("text");
                         requireActivity().runOnUiThread(() -> addResponse(result.trim()));
@@ -157,7 +204,7 @@ public class ChatFragment extends Fragment {
                 } else {
                     requireActivity().runOnUiThread(() -> {
                         try {
-                            addResponse("failed to load response due to " + response.body().string());
+                            addResponse("Failed to load response due to " + response.body().string());
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -165,6 +212,5 @@ public class ChatFragment extends Fragment {
                 }
             }
         });
-
     }
 }
