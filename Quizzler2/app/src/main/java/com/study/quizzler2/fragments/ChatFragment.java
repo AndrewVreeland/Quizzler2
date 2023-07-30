@@ -49,10 +49,17 @@ public class ChatFragment extends Fragment {
     private List<Message> messageList;
     private MessageAdapter messageAdapter;
 
-
     OkHttpClient client = new OkHttpClient();
+
     public ChatFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
@@ -74,8 +81,7 @@ public class ChatFragment extends Fragment {
             String question = messageEditText.getText().toString().trim();
             addToChat(question, Message.SENT_BY_ME);
             messageEditText.setText("");
-            Context thisContext = requireActivity().getApplicationContext();
-           callAPI(question, thisContext);
+            callAPI(question, requireContext());
         });
     }
 
@@ -89,20 +95,29 @@ public class ChatFragment extends Fragment {
         messageList.remove(messageList.size()-1);
         addToChat(response, Message.SENT_BY_BOT);
     }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
-    }
 
     void callAPI(String question, Context context) {
+        // Add user's current message to the conversation history
+        StringBuilder conversationHistory = new StringBuilder();
+        for (Message message : messageList) {
+            if (message.getSentBy().equals(Message.SENT_BY_ME)) {
+                // User's message
+                conversationHistory.append("User: ").append(message.getMessage()).append("\n");
+            } else if (message.getSentBy().equals(Message.SENT_BY_BOT)) {
+                // Bot's response
+                conversationHistory.append("Bot: ").append(message.getMessage()).append("\n");
+            }
+        }
+
+        // Add a marker for the current user's question
+        conversationHistory.append("User: ").append(question).append("\n");
+
         messageList.add(new Message("Typing...", Message.SENT_BY_BOT));
 
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("model", "text-davinci-003");
-            jsonBody.put("prompt", question);
+            jsonBody.put("prompt", conversationHistory.toString()); // Include the conversation history
             jsonBody.put("max_tokens", 4000);
             jsonBody.put("temperature", 1);
 
@@ -129,6 +144,7 @@ public class ChatFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = null;
+                    JSONObject jsonObject1 = null;
                     try {
                         jsonObject = new JSONObject(response.body().string());
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
