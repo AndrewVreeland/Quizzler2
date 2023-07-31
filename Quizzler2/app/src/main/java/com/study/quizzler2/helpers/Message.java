@@ -6,11 +6,13 @@ public class Message {
 
     String message;
     String sentBy;
+    String role;
 
 
-    public Message(String message, String sentBy) {
+    public Message(String message, String sentBy, String role) {
         this.message = message;
         this.sentBy = sentBy;
+        this.role = role;
     }
 
     public String getMessage() {

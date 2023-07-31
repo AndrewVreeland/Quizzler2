@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ public class ChatFragment extends Fragment {
             = MediaType.get("application/json; charset=utf-8");
 
     private boolean isFirstResponse = true;
+
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
@@ -81,7 +83,7 @@ public class ChatFragment extends Fragment {
 
         // If there is an initial message, add it to the chat and call the API
         if (initialMessage != null && !initialMessage.isEmpty()) {
-            addToChat(initialMessage, Message.SENT_BY_ME);
+            addToChat(initialMessage, Message.SENT_BY_ME, "system");
             callAPI(initialMessage, requireContext());
         }
 
@@ -93,17 +95,17 @@ public class ChatFragment extends Fragment {
 
         sendButton.setOnClickListener((v) -> {
             String question = messageEditText.getText().toString().trim();
-            addToChat(question, Message.SENT_BY_ME);
+            addToChat(question, Message.SENT_BY_ME, "user");
             messageEditText.setText("");
             callAPI(question, requireContext());
         });
     }
 
     // Method to add a message to the chat
-    void addToChat(String message, String sentBy) {
+    void addToChat(String message, String sentBy, String role) {
         // Check if messageAdapter is null before calling notifyDataSetChanged()
         if (messageAdapter != null) {
-            messageList.add(new Message(message, sentBy));
+            messageList.add(new Message(message, sentBy, role));
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         }
@@ -111,7 +113,9 @@ public class ChatFragment extends Fragment {
 
     // Method to add a response from the API to the chat
     void addResponse(String response) {
-        messageList.remove(messageList.size() - 1);
+        if (!messageList.isEmpty()) {
+            messageList.remove(messageList.size() - 1);
+        }
 
         if (isFirstResponse) {
             // Send the custom greeting message for the first response
@@ -133,18 +137,26 @@ public class ChatFragment extends Fragment {
 
     private void sendCustomGreetingMessage() {
         String greetingMessage = "Hello user, here is the additional information you requested:";
-        addToChat(greetingMessage, Message.SENT_BY_BOT);
+        addToChat(greetingMessage, Message.SENT_BY_BOT, "system");
     }
 
     private void sendActualResponse(String response) {
+        // Define a regular expression pattern to match common prefixes
+
         // Send the actual response from Chat GPT
-        addToChat(response, Message.SENT_BY_BOT);
+        addToChat(response, Message.SENT_BY_BOT, "system");
     }
 
     // Method to make the API call to Chat GPT
     void callAPI(String question, Context context) {
+        String instructionAndQuestion = "Please provide a clear and concise response in 2 sentences or less.\n" +
+                "do not include any prefixes in your response.\n" +
+                "only greet me once\n" +
+                "Tell me more about this fact.\n" +
+                question + "\n";
+
         // Build the conversation history from previous messages
-        StringBuilder conversationHistory = new StringBuilder();
+        StringBuilder conversationHistory = new StringBuilder(instructionAndQuestion);
         for (Message message : messageList) {
             if (message.getSentBy().equals(Message.SENT_BY_ME)) {
                 conversationHistory.append("User: ").append(message.getMessage()).append("\n");
@@ -153,17 +165,14 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        // Add the current user's question to the conversation history
-        conversationHistory.append("User: ").append(question).append("\n");
-
         // Add a "Typing..." indicator
-        messageList.add(new Message("Typing...", Message.SENT_BY_BOT));
+        addToChat("Bot: Typing...", Message.SENT_BY_BOT, "system");
 
         // Prepare the API request JSON
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("model", "text-davinci-003");
-            jsonBody.put("prompt", conversationHistory.toString());
+            jsonBody.put("model", "gpt-3.5-turbo-0613");
+            jsonBody.put("messages", new JSONArray().put(new JSONObject().put("role", "system").put("content", conversationHistory.toString())));
             jsonBody.put("max_tokens", 4000);
             jsonBody.put("temperature", 1);
         } catch (JSONException e) {
@@ -177,12 +186,10 @@ public class ChatFragment extends Fragment {
 
         // Build the API request
         Request request = new Request.Builder()
-                .url("https://api.openai.com/v1/completions")
+                .url("https://api.openai.com/v1/chat/completions")
                 .header("Authorization", "Bearer " + apiKey)
                 .post(body)
                 .build();
-
-        // Make the API call asynchronously
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -193,14 +200,31 @@ public class ChatFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     try {
-                        JSONObject jsonObject = new JSONObject(response.body().string());
-                        JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                        String result = jsonArray.getJSONObject(0).getString("text");
-                        requireActivity().runOnUiThread(() -> addResponse(result.trim()));
+                        String responseBody = response.body().string();
+                        Log.d("API_Response", responseBody); // Print the entire API response to the log
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        JSONArray choicesArray = jsonObject.getJSONArray("choices");
+
+                        if (choicesArray.length() > 0) {
+                            // Get the first choice from the array and check if it contains the "content" field
+                            JSONObject choiceObject = choicesArray.getJSONObject(0);
+                            if (choiceObject.has("message")) {
+                                JSONObject messageObject = choiceObject.getJSONObject("message");
+                                if (messageObject.has("content")) {
+                                    String result = messageObject.getString("content");
+                                    requireActivity().runOnUiThread(() -> addResponse(result.trim()));
+                                } else {
+                                    Log.e("API_Response", "No 'content' field in the message object.");
+                                }
+                            } else {
+                                Log.e("API_Response", "No 'message' object in the choice object.");
+                            }
+                        } else {
+                            Log.e("API_Response", "The 'choices' array is empty.");
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 } else {
                     requireActivity().runOnUiThread(() -> {
                         try {

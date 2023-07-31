@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.study.quizzler2.R;
+
 import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
 
