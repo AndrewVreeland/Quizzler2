@@ -49,4 +49,6 @@ dependencies {
     implementation 'com.amplifyframework:core:2.8.7'
     implementation 'com.amplifyframework:aws-auth-cognito:2.8.4'
     implementation 'software.amazon.awssdk:dynamodb:2.15.37'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0' // Gson converter for JSON serialization/deserialization
 }

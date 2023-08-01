@@ -1,8 +1,6 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.helpers.chatGPT;
 
 import android.content.Context;
-
-import com.study.quizzler2.helpers.Config;
 
 import org.json.JSONArray;
 import org.json.JSONException;

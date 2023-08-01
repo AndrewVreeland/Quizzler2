@@ -1,4 +1,4 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.helpers.chatGPT;
 public class Message {
     public static String SENT_BY_ME = "me";
     public static String SENT_BY_BOT="bot";
@@ -8,10 +8,17 @@ public class Message {
     String sentBy;
     String role;
 
-
     public Message(String message, String sentBy, String role) {
         this.message = message;
         this.sentBy = sentBy;
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
         this.role = role;
     }
 

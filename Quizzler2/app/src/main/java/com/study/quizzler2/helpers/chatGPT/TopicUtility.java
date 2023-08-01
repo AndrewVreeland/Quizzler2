@@ -1,4 +1,4 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.helpers.chatGPT;
 
 public class TopicUtility {
     public static int getTopicIndex(String topic) {

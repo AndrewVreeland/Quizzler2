@@ -9,6 +9,8 @@ import android.widget.Button;
 
 import com.study.quizzler2.R;
 
+import com.study.quizzler2.helpers.chatGPT.ChatGPTRandomFact;
+import com.study.quizzler2.helpers.chatGPT.TopicUtility;
 import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
 

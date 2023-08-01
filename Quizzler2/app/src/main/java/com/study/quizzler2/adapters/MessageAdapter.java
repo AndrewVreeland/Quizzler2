@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.study.quizzler2.R;
-import com.study.quizzler2.helpers.Message;
+import com.study.quizzler2.helpers.chatGPT.Message;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
