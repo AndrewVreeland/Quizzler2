@@ -1,23 +1,21 @@
 package com.study.quizzler2.helpers;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+
+import androidx.fragment.app.FragmentManager;
 
 import com.study.quizzler2.R;
-
 import com.study.quizzler2.helpers.chatGPT.ChatGPTRandomFact;
 import com.study.quizzler2.helpers.chatGPT.TopicUtility;
-import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
 
 public class FragmentHelper {
 
-    public static void replaceFragmentWithDelay(FragmentManager fragmentManager, int index, updateTriviaTextInterface.OnTextUpdateListener listener, View fragmentView) {
-        final int DELAY_MILLISECONDS = 0; // Adjust this value as needed (in milliseconds)
+    public static void replaceFragmentWithDelay(FragmentManager fragmentManager, int index, updateTriviaTextInterface.OnTextUpdateListener listener, View fragmentView, FragmentReplaceListener fragmentReplaceListener) {
+        final int DELAY_MILLISECONDS = 500; // Adjust this value as needed (in milliseconds)
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -26,31 +24,35 @@ public class FragmentHelper {
                     switch (index) {
                         case 0:
                             // Replace the current fragment with the HomeFragment
-                            generateRandomFactAndActivateButton(fragmentManager, "Science", fragmentView, listener);
+                            generateRandomFactAndNotifyListener(fragmentManager, "Science", listener, fragmentView);
                             break;
                         case 1:
                             // Replace the current fragment with the AnimalsFragment
-                            generateRandomFactAndActivateButton(fragmentManager, "Animals", fragmentView, listener);
+                            generateRandomFactAndNotifyListener(fragmentManager, "Animals", listener, fragmentView);
                             break;
                         case 2:
                             // Replace the current fragment with the HistoryFragment
-                            generateRandomFactAndActivateButton(fragmentManager, "History", fragmentView, listener);
+                            generateRandomFactAndNotifyListener(fragmentManager, "History", listener, fragmentView);
                             break;
                         case 3:
                             // Replace the current fragment with the GamesFragment
-                            generateRandomFactAndActivateButton(fragmentManager, "Games", fragmentView, listener);
+                            generateRandomFactAndNotifyListener(fragmentManager, "Games", listener, fragmentView);
                             break;
                         case 4:
                             // Replace the current fragment with the MusicFragment
-                            generateRandomFactAndActivateButton(fragmentManager, "Music", fragmentView, listener);
+                            generateRandomFactAndNotifyListener(fragmentManager, "Music", listener, fragmentView);
                             break;
                     }
+                }
+
+                if (fragmentReplaceListener != null) {
+                    fragmentReplaceListener.onFragmentReplaced();
                 }
             }
         }, DELAY_MILLISECONDS);
     }
 
-    private static void generateRandomFactAndActivateButton(FragmentManager fragmentManager, String topic, View fragmentView, updateTriviaTextInterface.OnTextUpdateListener listener) {
+    private static void generateRandomFactAndNotifyListener(FragmentManager fragmentManager, String topic, updateTriviaTextInterface.OnTextUpdateListener listener, View fragmentView) {
         // Generate a random fact for the provided topic
         ChatGPTRandomFact.generateRandomFact(TopicUtility.getTopicIndex(topic), fragmentView.getContext(), new ChatGPTRandomFact.RandomFactListener() {
             @Override
@@ -65,31 +67,13 @@ public class FragmentHelper {
                         if (listener != null) {
                             listener.updateText(randomFact);
                         }
-                        activateButton(fragmentManager, fragmentView, randomFact); // Pass the random fact to the activateButton method
                     }
                 });
             }
         });
     }
 
-    private static void activateButton(FragmentManager fragmentManager, View fragmentView, String randomFact) {
-        // Update the button visibility and functionality
-        Button yourButton = fragmentView.findViewById(R.id.learn_more_btn);
-        yourButton.setVisibility(View.VISIBLE); // Make the button visible
-        yourButton.setEnabled(true); // Enable the button functionality
-
-        // Set OnClickListener for the button
-        yourButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle the fragment transaction when the button is clicked
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                ChatFragment chatFragment = ChatFragment.newInstance("I want to learn more about " + "\"" + randomFact + "\".");
-                fragmentTransaction.replace(R.id.fragment_container, chatFragment);
-                fragmentTransaction.addToBackStack(null); // Add the transaction to the back stack
-                fragmentTransaction.commit();
-            }
-        });
+    public interface FragmentReplaceListener {
+        void onFragmentReplaced();
     }
-
 }
