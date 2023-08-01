@@ -34,7 +34,7 @@ public class ChatAPIClient {
     private final Handler mainHandler;
     private boolean isFirstResponse = true;
 
-    private String instruction1 = "Please provide a clear and concise response in 2 sentences or less.";
+    private String instruction1 = "Please respond briefly with no more than 2 sentences.";
     private String instruction2 = "Do not include any prefixes in your response.";
     private String instruction3 = "Tell me more about this fact.";
 
@@ -54,31 +54,32 @@ public class ChatAPIClient {
     }
 
     public void callAPI(String question, Context context) {
-        // Append instructions 1 and 2 to the user's question
-        String userMessage = instruction1 + "\n" + instruction2 + "\n" + question;
+        // Prepare the messages list
+        JSONArray messagesList = new JSONArray();
 
-        // Prepare the conversation history by adding instruction 3 and user's question
-        StringBuilder conversationHistory = new StringBuilder();
-        if (isFirstResponse) {
-            conversationHistory.append(instruction3).append("\n");
-            isFirstResponse = false;
-        }
-        conversationHistory.append(userMessage).append("\n");
-
-        // Append previous user and bot messages to the conversation history
-        for (Message message : chatFragment.getMessageList()) {
-            if (message.getSentBy().equals(Message.SENT_BY_ME)) {
-                conversationHistory.append("User: ").append(message.getMessage()).append("\n");
-            } else if (message.getSentBy().equals(Message.SENT_BY_BOT)) {
-                conversationHistory.append("Bot: ").append(message.getMessage()).append("\n");
-            }
-        }
-
-        // Prepare the API request JSON
-        JSONObject jsonBody = new JSONObject();
+        JSONObject jsonBody;
         try {
+            // Add instructions to the messages list only for the first API call
+            if (isFirstResponse) {
+                messagesList.put(new JSONObject().put("role", "system").put("content", instruction3));
+                messagesList.put(new JSONObject().put("role", "system").put("content", instruction1));
+                messagesList.put(new JSONObject().put("role", "system").put("content", instruction2));
+                isFirstResponse = false;
+            }
+
+            // Add previous user and bot messages to the messages list
+            for (Message message : chatFragment.getMessageList()) {
+                String role = message.getSentBy().equals(Message.SENT_BY_ME) ? "user" : "assistant";
+                messagesList.put(new JSONObject().put("role", role).put("content", message.getMessage()));
+            }
+
+            // Add the new user's question to the messages list
+            messagesList.put(new JSONObject().put("role", "user").put("content", question));
+
+            // Prepare the API request JSON
+            jsonBody = new JSONObject();
             jsonBody.put("model", "gpt-3.5-turbo-16k");
-            jsonBody.put("messages", new JSONArray().put(new JSONObject().put("role", "system").put("content", conversationHistory.toString())));
+            jsonBody.put("messages", messagesList);
             jsonBody.put("max_tokens", 4000);
             jsonBody.put("temperature", 1);
         } catch (JSONException e) {

@@ -1,6 +1,7 @@
 package com.study.quizzler2.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,12 @@ public class ChatFragment extends Fragment {
         messageEditText = view.findViewById(R.id.message_edit_text);
         sendButton = view.findViewById(R.id.send_btn);
 
+        messageAdapter = new MessageAdapter(messageList);
+        recyclerView.setAdapter(messageAdapter);
+        LinearLayoutManager llm = new LinearLayoutManager(requireContext());
+        llm.setStackFromEnd(true);
+        recyclerView.setLayoutManager(llm);
+
         chatAPIClient = new ChatAPIClient(this);
 
         // If there is an initial message, add it to the chat and call the API
@@ -76,12 +83,6 @@ public class ChatFragment extends Fragment {
             addToChat(initialMessage, Message.SENT_BY_ME, "system");
             chatAPIClient.callAPI(initialMessage, requireContext());
         }
-
-        messageAdapter = new MessageAdapter(messageList);
-        recyclerView.setAdapter(messageAdapter);
-        LinearLayoutManager llm = new LinearLayoutManager(requireContext());
-        llm.setStackFromEnd(true);
-        recyclerView.setLayoutManager(llm);
 
         sendButton.setOnClickListener((v) -> {
             String question = messageEditText.getText().toString().trim();
@@ -96,6 +97,7 @@ public class ChatFragment extends Fragment {
         // Check if messageAdapter is null before calling notifyDataSetChanged()
         if (messageAdapter != null) {
             messageList.add(new Message(message, sentBy, role));
+            Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         }
@@ -103,10 +105,6 @@ public class ChatFragment extends Fragment {
 
     // Method to add a response from the API to the chat
     public void addResponse(String response) {
-        if (!messageList.isEmpty()) {
-            messageList.remove(messageList.size() - 1);
-        }
-
         if (isFirstResponse) {
             // Send the custom greeting message for the first response
             sendCustomGreetingMessage();
@@ -131,10 +129,11 @@ public class ChatFragment extends Fragment {
     }
 
     private void sendActualResponse(String response) {
-        // Define a regular expression pattern to match common prefixes
+
 
         // Send the actual response from Chat GPT
         addToChat(response, Message.SENT_BY_BOT, "system");
+        Log.d("ChatFragment", "sendActualResponse: messageList size = " + messageList.size());
     }
 
     public List<Message> getMessageList() {

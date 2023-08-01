@@ -84,7 +84,7 @@ public class FragmentHelper {
             public void onClick(View v) {
                 // Handle the fragment transaction when the button is clicked
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                ChatFragment chatFragment = ChatFragment.newInstance("I want to learn more about " + randomFact);
+                ChatFragment chatFragment = ChatFragment.newInstance("I want to learn more about " + "\"" + randomFact + "\".");
                 fragmentTransaction.replace(R.id.fragment_container, chatFragment);
                 fragmentTransaction.addToBackStack(null); // Add the transaction to the back stack
                 fragmentTransaction.commit();
