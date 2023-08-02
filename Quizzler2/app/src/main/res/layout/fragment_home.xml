@@ -5,7 +5,7 @@
     android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#04063c"
     tools:context=".MainActivity">
 
     <com.hitomi.cmlibrary.CircleMenu
@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:maxWidth="300dp"
         android:text="TextView"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/circle_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

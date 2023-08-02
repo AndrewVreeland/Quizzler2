@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="#184FBF"
+        android:backgroundTint="#31BF18"
         android:padding="8dp"
         android:layout_marginEnd="80dp"
         android:id="@+id/left_chat_view"
@@ -20,7 +20,8 @@
 
             android:textColor="@color/white"
             android:id="@+id/left_chat_text_view"
-
+            android:textSize="18sp"
+            android:lineSpacingExtra="4dp"
             />
 
     </LinearLayout>
@@ -28,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="#31BF18"
+        android:backgroundTint="#184FBF"
         android:padding="8dp"
         android:layout_marginStart="80dp"
         android:id="@+id/right_chat_view"
@@ -39,7 +40,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:id="@+id/right_chat_text_view"
-
+            android:textSize="18sp"
+            android:lineSpacingExtra="4dp"
             />
 
     </LinearLayout>

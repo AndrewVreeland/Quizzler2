@@ -1,36 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="#04063c">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/message_layout"
+    android:scrollbars="vertical" />
 
     <LinearLayout
+        android:id="@+id/message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true"
+    android:background="#EFEFEF"
+    android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/message_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Type your message here"
-            android:inputType="text"
-            android:maxLines="1" />
+    <EditText
+        android:id="@+id/message_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Type your message here"
+        android:inputType="text"
+        android:maxLines="1" />
 
-        <ImageButton
-            android:id="@+id/send_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/send"
-            android:src="@android:drawable/ic_menu_send" />
-    </LinearLayout>
-
+    <ImageButton
+        android:id="@+id/send_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/send"
+        android:src="@android:drawable/ic_menu_send" />
 </LinearLayout>
+
+    </RelativeLayout>

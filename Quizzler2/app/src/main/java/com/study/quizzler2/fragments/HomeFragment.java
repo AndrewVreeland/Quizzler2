@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
         learnMoreButton.setVisibility(View.INVISIBLE);
         learnMoreButton.setEnabled(false);
 
-        circleMenu.setMainMenu(Color.parseColor("#CDCDCD"), R.mipmap.menu, R.mipmap.cancel)
+        circleMenu.setMainMenu(Color.parseColor("#04378f"), R.mipmap.menu, R.mipmap.cancel)
                 .addSubMenu(Color.parseColor("#88bef5"), R.mipmap.home)
                 .addSubMenu(Color.parseColor("#83e85a"), R.mipmap.animals)
                 .addSubMenu(Color.parseColor("#FF4B32"), R.mipmap.history)
