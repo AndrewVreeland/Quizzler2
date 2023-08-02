@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ public class ChatFragment extends Fragment {
 
     private boolean isFirstResponse = true;
 
+    private boolean isTypingMessageDisplayed = false;
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
@@ -65,6 +67,7 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         messageList = new ArrayList<>();
+
 
         recyclerView = view.findViewById(R.id.recycler_view);
         messageEditText = view.findViewById(R.id.message_edit_text);
@@ -106,8 +109,17 @@ public class ChatFragment extends Fragment {
                 return; // Exit the method if the message is empty or null
             }
 
+            if (isTypingMessageDisplayed) {
+                // If the "Typing..." message is already displayed, remove it before adding the new message
+                messageList.remove(messageList.size() - 1); // Remove the last message, i.e., "Typing..."
+                isTypingMessageDisplayed = false;
+            }
+
+            // Add the new message to the messageList
             messageList.add(new Message(message, sentBy, role));
             Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
+
+            // Notify the adapter about the changes to the data
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         }
@@ -115,30 +127,25 @@ public class ChatFragment extends Fragment {
 
     // Method to add a response from the API to the chat
     public void addResponse(String response) {
+        // Show the "Typing..." message immediately after the user's message is sent
+        addToChat("Typing...", Message.SENT_BY_BOT, "system");
+        isTypingMessageDisplayed = true;
+
         if (isFirstResponse) {
             // Send the custom greeting message for the first response
             sendCustomGreetingMessage();
             isFirstResponse = false; // Set the flag to false after the first response
-
-            // Add a 1-second delay before sending the actual response
-            DelayUtils.delayAction(new Runnable() {
-                @Override
-                public void run() {
-                    sendActualResponse(response.trim());
-
-                    // Enable the send button after sending the actual response
-                    sendButton.setEnabled(true);
-                }
-            }, 1000); // 1000 milliseconds = 1 second
-        } else {
-            // Send the actual response from Chat GPT without any delay
-            sendActualResponse(response.trim());
-
-            // Enable the send button after sending the actual response
-            sendButton.setEnabled(true);
         }
-    }
 
+        // Remove the "Typing..." message just before sending the actual response
+        removeTypingMessage();
+
+        // Send the actual response from Chat GPT
+        sendActualResponse(response.trim());
+
+        // Enable the send button after sending the actual response
+        sendButton.setEnabled(true);
+    }
     private void sendCustomGreetingMessage() {
         String greetingMessage = "Hello user, here is the additional information you requested:";
         addToChat(greetingMessage, Message.SENT_BY_BOT, "system");
@@ -150,6 +157,17 @@ public class ChatFragment extends Fragment {
         // Send the actual response from Chat GPT
         addToChat(response, Message.SENT_BY_BOT, "system");
         Log.d("ChatFragment", "sendActualResponse: messageList size = " + messageList.size());
+    }
+
+    private void removeTypingMessage() {
+        if (isTypingMessageDisplayed) {
+            messageList.remove(messageList.size() - 1); // Remove the last message, i.e., "Typing..."
+            isTypingMessageDisplayed = false;
+
+            // Notify the adapter about the changes to the data
+            messageAdapter.notifyDataSetChanged();
+            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+        }
     }
 
     public List<Message> getMessageList() {
