@@ -18,7 +18,6 @@ import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,6 +57,9 @@ public class ChatAPIClient {
         JSONArray messagesList = new JSONArray();
 
         JSONObject jsonBody;
+        if (question == null || question.trim().isEmpty()) {
+            return; // Exit the method if the input is empty or null
+        }
         try {
             // Add instructions to the messages list only for the first API call
             if (isFirstResponse) {

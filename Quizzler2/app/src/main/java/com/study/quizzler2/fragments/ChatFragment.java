@@ -86,9 +86,14 @@ public class ChatFragment extends Fragment {
 
         sendButton.setOnClickListener((v) -> {
             String question = messageEditText.getText().toString().trim();
-            addToChat(question, Message.SENT_BY_ME, "user");
-            messageEditText.setText("");
-            chatAPIClient.callAPI(question, requireContext());
+            if (!question.isEmpty()) {
+                // Disable the send button to prevent the user from sending another message
+                sendButton.setEnabled(false);
+
+                addToChat(question, Message.SENT_BY_ME, "user");
+                messageEditText.setText("");
+                chatAPIClient.callAPI(question, requireContext());
+            }
         });
     }
 
@@ -96,6 +101,11 @@ public class ChatFragment extends Fragment {
     void addToChat(String message, String sentBy, String role) {
         // Check if messageAdapter is null before calling notifyDataSetChanged()
         if (messageAdapter != null) {
+            // Check if the message is empty or null
+            if (message == null || message.trim().isEmpty()) {
+                return; // Exit the method if the message is empty or null
+            }
+
             messageList.add(new Message(message, sentBy, role));
             Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
             messageAdapter.notifyDataSetChanged();
@@ -115,11 +125,17 @@ public class ChatFragment extends Fragment {
                 @Override
                 public void run() {
                     sendActualResponse(response.trim());
+
+                    // Enable the send button after sending the actual response
+                    sendButton.setEnabled(true);
                 }
             }, 1000); // 1000 milliseconds = 1 second
         } else {
             // Send the actual response from Chat GPT without any delay
             sendActualResponse(response.trim());
+
+            // Enable the send button after sending the actual response
+            sendButton.setEnabled(true);
         }
     }
 

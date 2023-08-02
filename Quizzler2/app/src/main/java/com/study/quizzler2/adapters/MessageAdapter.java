@@ -22,12 +22,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, parent, false);
-        return new MyViewHolder(chatView);
+        if (viewType == 0) {
+            // If the question is null or empty, return an empty view with 0 height
+            View emptyView = new View(parent.getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
+            return new MyViewHolder(emptyView);
+        } else {
+            View chatView = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, parent, false);
+            return new MyViewHolder(chatView);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        if (getItemViewType(position) == 0) {
+            // Don't bind anything for the empty view
+            return;
+        }
+
         Message message = messageList.get(position);
         if (message.getSentBy().equals(Message.SENT_BY_ME)) {
             holder.leftChatView.setVisibility(View.GONE);
@@ -43,6 +55,25 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     @Override
     public int getItemCount() {
         return messageList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Message message = messageList.get(position);
+        if (message.getSentBy().equals(Message.SENT_BY_ME)) {
+            return 1;
+        } else {
+            if (isQuestionNullOrEmpty(position)) {
+                return 0; // Use viewType 0 for the empty layout
+            } else {
+                return 2;
+            }
+        }
+    }
+
+    // Helper method to check if the question is null or empty
+    private boolean isQuestionNullOrEmpty(int position) {
+        return messageList == null || messageList.isEmpty() || messageList.get(position).getMessage() == null || messageList.get(position).getMessage().isEmpty();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
