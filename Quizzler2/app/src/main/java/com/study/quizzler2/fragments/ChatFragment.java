@@ -35,6 +35,7 @@ public class ChatFragment extends Fragment {
     private boolean isFirstResponse = true;
 
     private boolean isTypingMessageDisplayed = false;
+
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
@@ -83,7 +84,11 @@ public class ChatFragment extends Fragment {
 
         // If there is an initial message, add it to the chat and call the API
         if (initialMessage != null && !initialMessage.isEmpty()) {
-            addToChat(initialMessage, Message.SENT_BY_ME, "system");
+            addToChat(initialMessage, Message.SENT_BY_ME, "user");
+            // Add "Typing..." immediately after displaying the initial message.
+            addToChat("Typing...", Message.SENT_BY_BOT, "system");
+            isTypingMessageDisplayed = true;
+
             chatAPIClient.callAPI(initialMessage, requireContext());
         }
 
@@ -94,6 +99,10 @@ public class ChatFragment extends Fragment {
                 sendButton.setEnabled(false);
 
                 addToChat(question, Message.SENT_BY_ME, "user");
+                // Add "Typing..." immediately after sending user's message.
+                addToChat("Typing...", Message.SENT_BY_BOT, "system");
+                isTypingMessageDisplayed = true;
+
                 messageEditText.setText("");
                 chatAPIClient.callAPI(question, requireContext());
             }
@@ -127,9 +136,8 @@ public class ChatFragment extends Fragment {
 
     // Method to add a response from the API to the chat
     public void addResponse(String response) {
-        // Show the "Typing..." message immediately after the user's message is sent
-        addToChat("Typing...", Message.SENT_BY_BOT, "system");
-        isTypingMessageDisplayed = true;
+        // Remove the "Typing..." message before adding the actual response.
+        removeTypingMessage();
 
         if (isFirstResponse) {
             // Send the custom greeting message for the first response
@@ -137,13 +145,10 @@ public class ChatFragment extends Fragment {
             isFirstResponse = false; // Set the flag to false after the first response
         }
 
-        // Remove the "Typing..." message just before sending the actual response
-        removeTypingMessage();
-
-        // Send the actual response from Chat GPT
+        // Send the actual response from Chat GPT.
         sendActualResponse(response.trim());
 
-        // Enable the send button after sending the actual response
+        // Enable the send button after sending the actual response.
         sendButton.setEnabled(true);
     }
     private void sendCustomGreetingMessage() {
@@ -170,8 +175,12 @@ public class ChatFragment extends Fragment {
         }
     }
 
+
+
     public List<Message> getMessageList() {
         return messageList;
     }
+
+
 
 }

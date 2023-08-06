@@ -64,10 +64,12 @@ public class ChatAPIClient {
             // Add instructions to the messages list only for the first API call
             if (isFirstResponse) {
                 messagesList.put(new JSONObject().put("role", "system").put("content", instruction3));
-                messagesList.put(new JSONObject().put("role", "system").put("content", instruction1));
                 messagesList.put(new JSONObject().put("role", "system").put("content", instruction2));
                 isFirstResponse = false;
             }
+
+            // Add instruction1 to every API call
+            messagesList.put(new JSONObject().put("role", "system").put("content", instruction1));
 
             // Add previous user and bot messages to the messages list
             for (Message message : chatFragment.getMessageList()) {
@@ -93,7 +95,6 @@ public class ChatAPIClient {
         // Call the API using the Retrofit service
         makeAPIRequest(jsonObject, context);
     }
-
     private void makeAPIRequest(JsonObject jsonObject, Context context) {
         // Get the API key from Config
         String apiKey = Config.getApiKey(context);
