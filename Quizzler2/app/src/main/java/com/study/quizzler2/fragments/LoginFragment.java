@@ -1,9 +1,12 @@
 package com.study.quizzler2.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,11 +38,18 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard(v);
+                v.clearFocus();
                 attemptLogin();
             }
         });
 
         return rootView;
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void attemptLogin() {
@@ -57,6 +67,8 @@ public class LoginFragment extends Fragment {
                 result -> {
                     HandlerUtil.runOnMainThread(() -> {
                         if (result.isSignedIn()) {
+                            Log.d("LoginFragment", "SignIn Callback executed. Result: " + result.isSignedIn());
+
                             userManager.setLoggedIn(true);
                             getParentFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, new HomeFragment())
@@ -71,6 +83,7 @@ public class LoginFragment extends Fragment {
                 error -> {
                     // Handle the error
                     HandlerUtil.runOnMainThread(() -> {
+                        Log.e("LoginFragment", "Error Callback executed. Error: " + error.toString());
                         Toast.makeText(getContext(), "Error logging in: " + error.toString(), Toast.LENGTH_SHORT).show();
                     });
                 }
