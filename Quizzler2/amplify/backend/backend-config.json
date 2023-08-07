@@ -18,7 +18,7 @@
     }
   },
   "auth": {
-    "quizzler2cb43b545": {
+    "quizzler28d89941a": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -34,9 +34,7 @@
           "EMAIL"
         ],
         "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
+        "usernameAttributes": [],
         "verificationMechanisms": [
           "EMAIL"
         ]

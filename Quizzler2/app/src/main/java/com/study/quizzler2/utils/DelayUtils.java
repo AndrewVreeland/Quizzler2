@@ -1,4 +1,4 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.utils;
 
 import android.os.Handler;
 

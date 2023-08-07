@@ -28,4 +28,5 @@ enum ConversationTypeEnum{
   Animals
   Games
   History
+  Science
 }

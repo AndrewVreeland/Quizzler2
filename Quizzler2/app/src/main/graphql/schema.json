@@ -623,6 +623,12 @@
                         "description": null,
                         "isDeprecated": false,
                         "deprecationReason": null
+                    },
+                    {
+                        "name": "Science",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     }
                 ],
                 "possibleTypes": null

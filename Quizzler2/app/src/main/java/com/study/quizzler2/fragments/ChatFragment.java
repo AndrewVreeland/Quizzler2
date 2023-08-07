@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
-import com.study.quizzler2.helpers.DelayUtils;
 import com.study.quizzler2.helpers.chatGPT.Message;
 
 import java.util.ArrayList;

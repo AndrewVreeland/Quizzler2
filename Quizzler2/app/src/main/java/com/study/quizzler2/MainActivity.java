@@ -7,18 +7,29 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.amplifyframework.AmplifyException;
 import com.google.android.material.navigation.NavigationView;
 import com.study.quizzler2.fragments.HomeFragment;
-
+import com.study.quizzler2.fragments.LoginFragment;
+import com.study.quizzler2.managers.UserManager;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
+import com.amplifyframework.core.Amplify;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
+    private UserManager userManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.activity_main);
+
+        userManager = new UserManager(this);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -32,9 +43,19 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment())
-                    .commit();
+            if (userManager.isLoggedIn()) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new HomeFragment())
+                        .commit();
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new LoginFragment())
+                        .commit();
+            }
+
+
+
+
         }
 
         // Set up item click listener for the navigation view
@@ -49,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
         });
-        // testing git
+
     }
 
     @Override

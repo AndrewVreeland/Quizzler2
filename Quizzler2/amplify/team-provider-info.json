@@ -1,22 +1,22 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-quizzler2-dev-173418-authRole",
-      "UnauthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-173418-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-173418-authRole",
+      "AuthRoleName": "amplify-quizzler2-dev-153652-authRole",
+      "UnauthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-153652-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::612998444197:role/amplify-quizzler2-dev-153652-authRole",
       "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-quizzler2-dev-173418-deployment",
-      "UnauthRoleName": "amplify-quizzler2-dev-173418-unauthRole",
-      "StackName": "amplify-quizzler2-dev-173418",
-      "StackId": "arn:aws:cloudformation:us-east-2:612998444197:stack/amplify-quizzler2-dev-173418/2e9713f0-2bfc-11ee-87b7-0292459d3d7d",
-      "AmplifyAppId": "d2yrvmfv8dzero"
+      "DeploymentBucketName": "amplify-quizzler2-dev-153652-deployment",
+      "UnauthRoleName": "amplify-quizzler2-dev-153652-unauthRole",
+      "StackName": "amplify-quizzler2-dev-153652",
+      "StackId": "arn:aws:cloudformation:us-east-2:612998444197:stack/amplify-quizzler2-dev-153652/c3a620b0-3559-11ee-a646-0af70027e171",
+      "AmplifyAppId": "d1ob40da7wwqga"
     },
     "categories": {
       "api": {
         "quizzler2": {}
       },
       "auth": {
-        "quizzler2cb43b545": {}
+        "quizzler28d89941a": {}
       }
     }
   }
