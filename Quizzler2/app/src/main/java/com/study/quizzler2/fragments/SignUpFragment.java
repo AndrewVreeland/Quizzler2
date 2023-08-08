@@ -14,6 +14,7 @@ import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
+import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.utils.HandlerUtil;
 
 public class SignUpFragment extends Fragment {
@@ -71,5 +72,23 @@ public class SignUpFragment extends Fragment {
                         Toast.makeText(getContext(), "Sign Up failed: " + error.toString(), Toast.LENGTH_SHORT).show()
                 )
         );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof ActionBarVisibility) {
+            // This will hide the ActionBar when the fragment is visible
+            ((ActionBarVisibility) getActivity()).hideActionBar();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() instanceof ActionBarVisibility) {
+            // This will show the ActionBar again when the fragment is no longer visible
+            ((ActionBarVisibility) getActivity()).showActionBar();
+        }
     }
 }

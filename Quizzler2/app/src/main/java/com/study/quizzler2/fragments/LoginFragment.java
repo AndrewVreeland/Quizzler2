@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
+import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.utils.HandlerUtil;
 
@@ -108,4 +109,23 @@ public class LoginFragment extends Fragment {
                 }
         );
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof ActionBarVisibility) {
+            // This will hide the ActionBar when the fragment is visible
+            ((ActionBarVisibility) getActivity()).hideActionBar();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() instanceof ActionBarVisibility) {
+            // This will show the ActionBar again when the fragment is no longer visible
+            ((ActionBarVisibility) getActivity()).showActionBar();
+        }
+    }
 }
+

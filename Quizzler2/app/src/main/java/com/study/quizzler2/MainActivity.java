@@ -9,11 +9,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.study.quizzler2.fragments.HomeFragment;
 import com.study.quizzler2.fragments.LoginFragment;
+import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.helpers.AuthHelper;
 import com.study.quizzler2.helpers.HamburgerMenuHelper;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity implements ActionBarVisibility {
 
     private DrawerLayout drawerLayout;
     private UserManager userManager;
@@ -62,5 +65,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+    @Override
+    public void hideActionBar() {
+        Objects.requireNonNull(getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void showActionBar() {
+        Objects.requireNonNull(getSupportActionBar()).show();
     }
 }
