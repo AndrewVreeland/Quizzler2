@@ -5,6 +5,12 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/home_foreground"
             android:title="Home" />
-        <!-- Add other menu items as needed -->
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/baseline_logout_24"
+        android:title="Logout"/>
     </group>
+
+
 </menu>
