@@ -55,9 +55,18 @@ public class SignUpFragment extends Fragment {
                 username,
                 password,
                 options,
-                result -> HandlerUtil.runOnMainThread(() ->
-                        Toast.makeText(getContext(), "Sign Up was successful!", Toast.LENGTH_SHORT).show()
-                ),
+                result -> HandlerUtil.runOnMainThread(() -> {
+                    Toast.makeText(getContext(), "Sign Up was successful!", Toast.LENGTH_SHORT).show();
+
+                    // Navigate back to the login page.
+                    if (getParentFragmentManager() != null) {
+                        getParentFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragment_container, new LoginFragment())
+                                .commit();
+                    }
+
+                }),
                 error -> HandlerUtil.runOnMainThread(() ->
                         Toast.makeText(getContext(), "Sign Up failed: " + error.toString(), Toast.LENGTH_SHORT).show()
                 )
