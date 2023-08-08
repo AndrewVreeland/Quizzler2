@@ -8,6 +8,7 @@ import com.amplifyframework.auth.cognito.result.AWSCognitoAuthSignOutResult;
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.fragments.LoginFragment;
 import com.study.quizzler2.R;
+import com.study.quizzler2.interfaces.AuthResultCallback;
 import com.study.quizzler2.managers.UserManager;
 
 public class AuthHelper {
@@ -46,6 +47,19 @@ public class AuthHelper {
                 activity.runOnUiThread(() -> {
                     Toast.makeText(activity, "Error during logout: " + failedSignOutResult.getException().toString(), Toast.LENGTH_SHORT).show();
                 });
+            }
+        });
+    }
+    public void handleSignOut(AuthResultCallback callback) {
+        Amplify.Auth.signOut(signOutResult -> {
+            if (signOutResult instanceof AWSCognitoAuthSignOutResult.CompleteSignOut) {
+                callback.onResult(new AuthResult(true, "Signed out successfully."));
+            } else if (signOutResult instanceof AWSCognitoAuthSignOutResult.PartialSignOut) {
+                callback.onResult(new AuthResult(true, "Partial sign out. Please check for potential issues."));
+            } else if (signOutResult instanceof AWSCognitoAuthSignOutResult.FailedSignOut) {
+                AWSCognitoAuthSignOutResult.FailedSignOut failedSignOutResult =
+                        (AWSCognitoAuthSignOutResult.FailedSignOut) signOutResult;
+                callback.onResult(new AuthResult(false, "Error during logout: " + failedSignOutResult.getException().toString()));
             }
         });
     }
