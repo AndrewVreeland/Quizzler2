@@ -49,12 +49,6 @@ public class LoginFragment extends Fragment {
             }
         });
 
-
-
-
-
-
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,11 +83,21 @@ public class LoginFragment extends Fragment {
                         if (result.isSignedIn()) {
                             Log.d("LoginFragment", "SignIn Callback executed. Result: " + result.isSignedIn());
 
-                            userManager.setLoggedIn(true);
-                            getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, new HomeFragment())
-                                    .commit();
-                            Toast.makeText(getContext(), "Logged in successfully", Toast.LENGTH_SHORT).show();
+                            // Fetch the logged-in user's details
+                            Amplify.Auth.getCurrentUser(
+                                    user -> {
+                                        String loggedInUsername = user.getUsername();
+                                        userManager.saveUsername(loggedInUsername);  // Save the logged-in username
+
+                                        // Move to the next fragment only after the username is saved
+                                        userManager.setLoggedIn(true);
+                                        getParentFragmentManager().beginTransaction()
+                                                .replace(R.id.fragment_container, new HomeFragment())
+                                                .commit();
+                                        Toast.makeText(getContext(), "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                    },
+                                    error -> Log.e("LoginFragment", "Error fetching current user: " + error.getMessage())
+                            );
                         } else {
                             // Handle cases like MultiFactorAuth or other additional sign-in steps
                             Toast.makeText(getContext(), "Sign in not complete. Check your credentials or MFA.", Toast.LENGTH_SHORT).show();

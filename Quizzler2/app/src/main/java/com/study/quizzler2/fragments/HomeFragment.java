@@ -3,6 +3,7 @@ package com.study.quizzler2.fragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,11 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.amplifyframework.api.graphql.model.ModelMutation;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.generated.model.Conversation;
+import com.amplifyframework.datastore.generated.model.ConversationTypeEnum;
+import com.amplifyframework.datastore.generated.model.User;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
@@ -113,11 +119,34 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                         requireActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, ChatFragment.newInstance("I want to learn more about \"" + textView.getText().toString() + "\"."))
-                                .addToBackStack(null) // Add the transaction to the back stack
+                                .addToBackStack(null)
                                 .commit();
+
+                        // Create a new conversation
+                        createNewConversation();
                     }
                 });
             }
         }
+    }
+    private void createNewConversation() {
+        Amplify.Auth.getCurrentUser(
+                user -> {
+                    String userId = user.getUserId();
+                    User userObj = User.fromId(userId);  // Hypothetical method
+
+                    Conversation conversation = Conversation.builder()
+                            .user(userObj)
+                            .conversationType(ConversationTypeEnum.valueOf(textView.getText().toString()))
+                            .build();
+
+                    Amplify.API.mutate(
+                            ModelMutation.create(conversation),
+                            response -> Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId()),
+                            error -> Log.e("CreateConversation", "Failed to create conversation.", error)
+                    );
+                },
+                error -> Log.e("HomeFragment", "Error fetching current user: " + error.getMessage())
+        );
     }
 }
