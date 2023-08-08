@@ -1,12 +1,13 @@
 package com.study.quizzler2.helpers;
 
+import android.view.MenuItem;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.study.quizzler2.R;
-import com.study.quizzler2.fragments.HomeFragment;
 import com.study.quizzler2.fragments.LoginFragment;
 
 public class HamburgerMenuHelper {
@@ -20,8 +21,12 @@ public class HamburgerMenuHelper {
         this.activity = activity;
         this.drawerLayout = drawerLayout;
         this.authHelper = authHelper;
-        setupDrawerToggle();
         setupHamburgerIcon();
+        setupDrawerToggle();
+    }
+
+    private void setupHamburgerIcon() {
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void setupDrawerToggle() {
@@ -30,12 +35,11 @@ public class HamburgerMenuHelper {
         toggle.syncState();
     }
 
-    private void setupHamburgerIcon() {
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    public boolean onOptionsItemSelected() {
-        return toggle.onOptionsItemSelected(activity.getIntent().getParcelableExtra(null));
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return false;
     }
 
     public void setupNavigationView(NavigationView navigationView) {
@@ -62,5 +66,4 @@ public class HamburgerMenuHelper {
             return true;
         });
     }
-
 }

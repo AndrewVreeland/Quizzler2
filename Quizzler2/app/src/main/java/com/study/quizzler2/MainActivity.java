@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (hamburgerMenuHelper.onOptionsItemSelected()) {
+        if (hamburgerMenuHelper.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
