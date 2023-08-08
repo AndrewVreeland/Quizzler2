@@ -6,34 +6,32 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/usernameEditText"
+        android:id="@+id/usernameSignUpEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Username" />
 
     <EditText
-        android:id="@+id/passwordEditText"
+        android:id="@+id/passwordSignUpEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
         android:layout_marginTop="10dp" />
 
-    <Button
-        android:id="@+id/loginButton"
+    <EditText
+        android:id="@+id/emailSignUpEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
         android:layout_marginTop="20dp" />
 
-    <TextView
-        android:id="@+id/signUpTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Don't have an account? Sign up"
-        android:layout_marginTop="10dp"
-        android:textColor="?android:attr/colorAccent"
-        android:clickable="true"
-        android:focusable="true"
-        />
 </LinearLayout>

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,24 @@ public class LoginFragment extends Fragment {
         usernameEditText = rootView.findViewById(R.id.usernameEditText);
         passwordEditText = rootView.findViewById(R.id.passwordEditText);
         loginButton = rootView.findViewById(R.id.loginButton);
+        TextView signUpTextView = rootView.findViewById(R.id.signUpTextView);
+
+        signUpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to SignUpFragment
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new SignUpFragment())
+                        .addToBackStack(null)  // This will allow you to go back to the LoginFragment by pressing the back button
+                        .commit();
+            }
+        });
+
+
+
+
+
+
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
