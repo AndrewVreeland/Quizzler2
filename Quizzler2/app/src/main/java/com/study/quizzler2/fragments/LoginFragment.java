@@ -18,7 +18,7 @@ import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
-import com.study.quizzler2.utils.HandlerUtil;
+import com.study.quizzler2.utils.HandlerUtility;
 
 public class LoginFragment extends Fragment {
 
@@ -79,7 +79,7 @@ public class LoginFragment extends Fragment {
                 username,
                 password,
                 result -> {
-                    HandlerUtil.runOnMainThread(() -> {
+                    HandlerUtility.runOnMainThread(() -> {
                         if (result.isSignedIn()) {
                             Log.d("LoginFragment", "SignIn Callback executed. Result: " + result.isSignedIn());
 
@@ -106,7 +106,7 @@ public class LoginFragment extends Fragment {
                 },
                 error -> {
                     // Handle the error
-                    HandlerUtil.runOnMainThread(() -> {
+                    HandlerUtility.runOnMainThread(() -> {
                         Log.e("LoginFragment", "Error Callback executed. Error: " + error.toString());
                         Toast.makeText(getContext(), "Error logging in: " + error.toString(), Toast.LENGTH_SHORT).show();
                     });

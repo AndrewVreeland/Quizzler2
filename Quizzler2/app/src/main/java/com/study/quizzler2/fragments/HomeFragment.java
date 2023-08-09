@@ -24,6 +24,7 @@ import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
 import com.study.quizzler2.helpers.FragmentHelper;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
+import com.study.quizzler2.utils.TopicUtility;
 
 import java.util.Objects;
 
@@ -34,6 +35,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     private ConstraintLayout constraintLayout;
     private TextView textView;
     private Button learnMoreButton;
+    private String currentCategory = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,7 +90,8 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     }
 
     @Override
-    public void updateText(String newText) {
+    public void updateText(String newText, String category) {
+        this.currentCategory = category;
         textView.setText(newText);
         progressBar.setVisibility(View.INVISIBLE);
         textView.setVisibility(View.VISIBLE);
@@ -130,23 +133,35 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
         }
     }
     private void createNewConversation() {
-        Amplify.Auth.getCurrentUser(
-                user -> {
-                    String userId = user.getUserId();
-                    User userObj = User.fromId(userId);  // Hypothetical method
+        // Retrieve the current authenticated user
+        Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
+            @Override
+            public void accept(com.amplifyframework.auth.AuthUser authUser) {
+                // Create an instance of the User model using the ID of the authenticated user
+                User userObj = User.justId(authUser.getUserId());
 
-                    Conversation conversation = Conversation.builder()
-                            .user(userObj)
-                            .conversationType(ConversationTypeEnum.valueOf(textView.getText().toString()))
-                            .build();
+                // grabbing the current category for the random fact.
+                ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
-                    Amplify.API.mutate(
-                            ModelMutation.create(conversation),
-                            response -> Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId()),
-                            error -> Log.e("CreateConversation", "Failed to create conversation.", error)
-                    );
-                },
-                error -> Log.e("HomeFragment", "Error fetching current user: " + error.getMessage())
-        );
+
+                // Build the Conversation object using the user instance
+                Conversation conversation = Conversation.builder()
+                        .user(userObj)
+                        .conversationType(conversationType)
+                        .build();
+
+                // Mutate the API to create the conversation
+                Amplify.API.mutate(
+                        ModelMutation.create(conversation),
+                        response -> Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId()),
+                        error -> Log.e("CreateConversation", "Failed to create conversation.", error)
+                );
+            }
+        }, new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthException>() {
+            @Override
+            public void accept(com.amplifyframework.auth.AuthException authException) {
+                Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
+            }
+        });
     }
 }

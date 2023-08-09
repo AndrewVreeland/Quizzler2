@@ -15,7 +15,7 @@ import com.amplifyframework.auth.options.AuthSignUpOptions;
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
-import com.study.quizzler2.utils.HandlerUtil;
+import com.study.quizzler2.utils.HandlerUtility;
 
 public class SignUpFragment extends Fragment {
 
@@ -56,7 +56,7 @@ public class SignUpFragment extends Fragment {
                 username,
                 password,
                 options,
-                result -> HandlerUtil.runOnMainThread(() -> {
+                result -> HandlerUtility.runOnMainThread(() -> {
                     Toast.makeText(getContext(), "Sign Up was successful!", Toast.LENGTH_SHORT).show();
 
                     // Navigate back to the login page.
@@ -68,7 +68,7 @@ public class SignUpFragment extends Fragment {
                     }
 
                 }),
-                error -> HandlerUtil.runOnMainThread(() ->
+                error -> HandlerUtility.runOnMainThread(() ->
                         Toast.makeText(getContext(), "Sign Up failed: " + error.toString(), Toast.LENGTH_SHORT).show()
                 )
         );

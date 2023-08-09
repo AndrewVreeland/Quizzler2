@@ -1,13 +1,10 @@
 package com.study.quizzler2.helpers.chatGPT;
 
 import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -28,35 +25,37 @@ public class ChatGPTRandomFact {
     public static final int TOPIC_GAMES = 3;
     public static final int TOPIC_MUSIC = 4;
 
-    // Method to generate a random fact based on the provided index
     public static void generateRandomFact(int index, Context context, RandomFactListener listener) {
         String apiKey = Config.getApiKey(context);
 
         String prompt = "Generate a random fact about ";
         String[] topics = { "Science", "Animals", "History", "Games", "Music" };
+        String selectedTopic;
+
         if (index >= 0 && index < topics.length) {
-            prompt += topics[index];
+            selectedTopic = topics[index];
+            prompt += selectedTopic;
         } else {
             if (listener != null) {
-                listener.onRandomFactGenerated("Invalid index"); // Return a default message for an invalid index
+                listener.onRandomFactGenerated("", "Invalid index"); // Return a default message for an invalid index
             }
             return;
         }
 
         try {
-            // Make the API call to generate a random fact
-            callAPI(prompt, apiKey, listener);
+            callAPI(prompt, apiKey, listener, selectedTopic);
         } catch (Exception e) {
             e.printStackTrace();
             if (listener != null) {
-                listener.onRandomFactGenerated("Failed to generate a random fact."); // Return a default message in case of an error
+                listener.onRandomFactGenerated(selectedTopic, "Failed to generate a random fact."); // Return a default message in case of an error
             }
         }
     }
 
-    private static void callAPI(String question, String apiKey, RandomFactListener listener) throws IOException, JSONException {
+    private static void callAPI(String question, String apiKey, RandomFactListener listener, String category) throws IOException, JSONException {
         String timestamp = String.valueOf(System.currentTimeMillis());
         String apiUrl = "https://api.openai.com/v1/completions?timestamp=" + timestamp;
+
         JSONObject jsonBody = new JSONObject();
         jsonBody.put("model", "text-davinci-003");
         jsonBody.put("prompt", question);
@@ -75,7 +74,7 @@ public class ChatGPTRandomFact {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
-                    listener.onRandomFactGenerated("Failed to generate a random fact.");
+                    listener.onRandomFactGenerated(category, "Failed to generate a random fact.");
                 }
             }
 
@@ -87,25 +86,25 @@ public class ChatGPTRandomFact {
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
                         String randomFact = jsonArray.getJSONObject(0).getString("text").trim();
                         if (listener != null) {
-                            listener.onRandomFactGenerated(randomFact);
+                            listener.onRandomFactGenerated(category, randomFact);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         if (listener != null) {
-                            listener.onRandomFactGenerated("Failed to generate a random fact.");
+                            listener.onRandomFactGenerated(category, "Failed to generate a random fact.");
                         }
                     }
                 } else {
                     if (listener != null) {
-                        listener.onRandomFactGenerated("Failed to generate a random fact.");
+                        listener.onRandomFactGenerated(category, "Failed to generate a random fact.");
                     }
                 }
             }
         });
     }
 
-    // Listener interface for receiving the generated random fact
+    // Listener interface for receiving the generated random fact and its category
     public interface RandomFactListener {
-        void onRandomFactGenerated(String randomFact);
+        void onRandomFactGenerated(String category, String randomFact);
     }
 }

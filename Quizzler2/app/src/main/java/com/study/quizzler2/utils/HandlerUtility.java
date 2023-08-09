@@ -3,11 +3,11 @@ package com.study.quizzler2.utils;
 import android.os.Handler;
 import android.os.Looper;
 
-public class HandlerUtil {
+public class HandlerUtility {
 
     private static final Handler MAIN_THREAD_HANDLER = new Handler(Looper.getMainLooper());
 
-    private HandlerUtil() {
+    private HandlerUtility() {
         // private constructor to prevent instantiation
     }
 
