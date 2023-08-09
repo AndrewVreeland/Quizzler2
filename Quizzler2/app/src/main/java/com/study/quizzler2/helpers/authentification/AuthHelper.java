@@ -1,4 +1,4 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.helpers.authentification;
 
 import android.app.Activity;
 import android.widget.Toast;
@@ -8,6 +8,7 @@ import com.amplifyframework.auth.cognito.result.AWSCognitoAuthSignOutResult;
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.fragments.LoginFragment;
 import com.study.quizzler2.R;
+import com.study.quizzler2.helpers.authentification.AuthResult;
 import com.study.quizzler2.interfaces.AuthResultCallback;
 import com.study.quizzler2.managers.UserManager;
 

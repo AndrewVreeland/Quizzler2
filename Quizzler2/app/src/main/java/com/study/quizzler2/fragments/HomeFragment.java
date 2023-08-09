@@ -22,6 +22,7 @@ import com.amplifyframework.datastore.generated.model.User;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
+import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.FragmentHelper;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
 import com.study.quizzler2.utils.TopicUtility;
@@ -132,6 +133,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
             }
         }
     }
+
     private void createNewConversation() {
         // Retrieve the current authenticated user
         Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
@@ -143,7 +145,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 // grabbing the current category for the random fact.
                 ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
-
                 // Build the Conversation object using the user instance
                 Conversation conversation = Conversation.builder()
                         .user(userObj)
@@ -153,7 +154,11 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 // Mutate the API to create the conversation
                 Amplify.API.mutate(
                         ModelMutation.create(conversation),
-                        response -> Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId()),
+                        response -> {
+                            Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId());
+                            String conversationID = response.getData().getId();
+                            DatabaseHelper.ensureConversationExistsAndThenSaveMessage(conversationID, "I want to learn more about \"" + textView.getText().toString() + "\".");
+                        },
                         error -> Log.e("CreateConversation", "Failed to create conversation.", error)
                 );
             }

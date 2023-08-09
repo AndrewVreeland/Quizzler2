@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.study.quizzler2.fragments.ChatFragment;
+import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.interfaces.ChatAPI;
 
 import org.json.JSONArray;
@@ -79,6 +80,10 @@ public class ChatAPIClient {
 
             // Add the new user's question to the messages list
             messagesList.put(new JSONObject().put("role", "user").put("content", question));
+
+            // Save the user's question to DynamoDB
+            String conversationID = "your_conversation_id_here";  // Fetch appropriate conversation ID dynamically
+            DatabaseHelper.saveMessageToDynamoDB(question, conversationID);
 
             // Prepare the API request JSON
             jsonBody = new JSONObject();

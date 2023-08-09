@@ -6,6 +6,11 @@ type User @model {
   id: ID!
   username: String!
   conversations: [Conversation] @hasMany(indexName: "byConversation", fields: ["id"])
+  _version: Int!
+  _lastChangedAt: AWSTimestamp!
+  _deleted: Boolean
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type Conversation @model {
@@ -21,6 +26,11 @@ type Message @model {
   conversationID: ID! @index(name: "byMessage", sortKeyFields: ["content"])
   content: String!
   conversation: Conversation @belongsTo(fields: ["conversationID"])
+  _version: Int!
+  _lastChangedAt: AWSTimestamp!
+  _deleted: Boolean
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 enum ConversationTypeEnum{

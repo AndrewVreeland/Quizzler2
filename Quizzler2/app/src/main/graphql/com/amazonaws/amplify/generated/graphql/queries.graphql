@@ -16,6 +16,9 @@ query GetUser($id: ID!) {
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -35,6 +38,9 @@ query ListUsers(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -56,6 +62,9 @@ query GetConversation($id: ID!) {
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -65,6 +74,9 @@ query GetConversation($id: ID!) {
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -91,6 +103,9 @@ query ListConversations(
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -120,6 +135,9 @@ query GetMessage($id: ID!) {
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -132,6 +150,9 @@ query GetMessage($id: ID!) {
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -156,6 +177,9 @@ query ListMessages(
         updatedAt
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -188,6 +212,9 @@ query ConversationsByUserIDAndId(
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -233,6 +260,9 @@ query MessagesByConversationIDAndContent(
         updatedAt
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename

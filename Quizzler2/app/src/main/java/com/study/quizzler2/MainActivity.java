@@ -11,7 +11,7 @@ import com.study.quizzler2.fragments.HomeFragment;
 import com.study.quizzler2.fragments.LoginFragment;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
-import com.study.quizzler2.helpers.AuthHelper;
+import com.study.quizzler2.helpers.authentification.AuthHelper;
 import com.study.quizzler2.helpers.HamburgerMenuHelper;
 
 import java.util.Objects;

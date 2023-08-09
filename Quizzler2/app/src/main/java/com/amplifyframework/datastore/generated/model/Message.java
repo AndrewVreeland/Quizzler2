@@ -25,11 +25,19 @@ public final class Message implements Model {
   public static final QueryField ID = field("Message", "id");
   public static final QueryField CONTENT = field("Message", "content");
   public static final QueryField CONVERSATION = field("Message", "conversationID");
+  public static final QueryField VERSION = field("Message", "_version");
+  public static final QueryField LAST_CHANGED_AT = field("Message", "_lastChangedAt");
+  public static final QueryField DELETED = field("Message", "_deleted");
+  public static final QueryField CREATED_AT = field("Message", "createdAt");
+  public static final QueryField UPDATED_AT = field("Message", "updatedAt");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String content;
   private final @ModelField(targetType="Conversation") @BelongsTo(targetName = "conversationID", targetNames = {"conversationID"}, type = Conversation.class) Conversation conversation;
-  private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
-  private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
+  private final @ModelField(targetType="Int", isRequired = true) Integer _version;
+  private final @ModelField(targetType="AWSTimestamp", isRequired = true) Temporal.Timestamp _lastChangedAt;
+  private final @ModelField(targetType="Boolean") Boolean _deleted;
+  private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime createdAt;
+  private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime updatedAt;
   public String resolveIdentifier() {
     return id;
   }
@@ -46,6 +54,18 @@ public final class Message implements Model {
       return conversation;
   }
   
+  public Integer getVersion() {
+      return _version;
+  }
+  
+  public Temporal.Timestamp getLastChangedAt() {
+      return _lastChangedAt;
+  }
+  
+  public Boolean getDeleted() {
+      return _deleted;
+  }
+  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -54,10 +74,15 @@ public final class Message implements Model {
       return updatedAt;
   }
   
-  private Message(String id, String content, Conversation conversation) {
+  private Message(String id, String content, Conversation conversation, Integer _version, Temporal.Timestamp _lastChangedAt, Boolean _deleted, Temporal.DateTime createdAt, Temporal.DateTime updatedAt) {
     this.id = id;
     this.content = content;
     this.conversation = conversation;
+    this._version = _version;
+    this._lastChangedAt = _lastChangedAt;
+    this._deleted = _deleted;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
   
   @Override
@@ -71,6 +96,9 @@ public final class Message implements Model {
       return ObjectsCompat.equals(getId(), message.getId()) &&
               ObjectsCompat.equals(getContent(), message.getContent()) &&
               ObjectsCompat.equals(getConversation(), message.getConversation()) &&
+              ObjectsCompat.equals(getVersion(), message.getVersion()) &&
+              ObjectsCompat.equals(getLastChangedAt(), message.getLastChangedAt()) &&
+              ObjectsCompat.equals(getDeleted(), message.getDeleted()) &&
               ObjectsCompat.equals(getCreatedAt(), message.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), message.getUpdatedAt());
       }
@@ -82,6 +110,9 @@ public final class Message implements Model {
       .append(getId())
       .append(getContent())
       .append(getConversation())
+      .append(getVersion())
+      .append(getLastChangedAt())
+      .append(getDeleted())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -95,6 +126,9 @@ public final class Message implements Model {
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("content=" + String.valueOf(getContent()) + ", ")
       .append("conversation=" + String.valueOf(getConversation()) + ", ")
+      .append("_version=" + String.valueOf(getVersion()) + ", ")
+      .append("_lastChangedAt=" + String.valueOf(getLastChangedAt()) + ", ")
+      .append("_deleted=" + String.valueOf(getDeleted()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -117,6 +151,11 @@ public final class Message implements Model {
     return new Message(
       id,
       null,
+      null,
+      null,
+      null,
+      null,
+      null,
       null
     );
   }
@@ -124,10 +163,35 @@ public final class Message implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       content,
-      conversation);
+      conversation,
+      _version,
+      _lastChangedAt,
+      _deleted,
+      createdAt,
+      updatedAt);
   }
   public interface ContentStep {
-    BuildStep content(String content);
+    VersionStep content(String content);
+  }
+  
+
+  public interface VersionStep {
+    LastChangedAtStep version(Integer version);
+  }
+  
+
+  public interface LastChangedAtStep {
+    CreatedAtStep lastChangedAt(Temporal.Timestamp lastChangedAt);
+  }
+  
+
+  public interface CreatedAtStep {
+    UpdatedAtStep createdAt(Temporal.DateTime createdAt);
+  }
+  
+
+  public interface UpdatedAtStep {
+    BuildStep updatedAt(Temporal.DateTime updatedAt);
   }
   
 
@@ -135,13 +199,19 @@ public final class Message implements Model {
     Message build();
     BuildStep id(String id);
     BuildStep conversation(Conversation conversation);
+    BuildStep deleted(Boolean deleted);
   }
   
 
-  public static class Builder implements ContentStep, BuildStep {
+  public static class Builder implements ContentStep, VersionStep, LastChangedAtStep, CreatedAtStep, UpdatedAtStep, BuildStep {
     private String id;
     private String content;
+    private Integer _version;
+    private Temporal.Timestamp _lastChangedAt;
+    private Temporal.DateTime createdAt;
+    private Temporal.DateTime updatedAt;
     private Conversation conversation;
+    private Boolean _deleted;
     @Override
      public Message build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -149,19 +219,58 @@ public final class Message implements Model {
         return new Message(
           id,
           content,
-          conversation);
+          conversation,
+          _version,
+          _lastChangedAt,
+          _deleted,
+          createdAt,
+          updatedAt);
     }
     
     @Override
-     public BuildStep content(String content) {
+     public VersionStep content(String content) {
         Objects.requireNonNull(content);
         this.content = content;
         return this;
     }
     
     @Override
+     public LastChangedAtStep version(Integer version) {
+        Objects.requireNonNull(version);
+        this._version = version;
+        return this;
+    }
+    
+    @Override
+     public CreatedAtStep lastChangedAt(Temporal.Timestamp lastChangedAt) {
+        Objects.requireNonNull(lastChangedAt);
+        this._lastChangedAt = lastChangedAt;
+        return this;
+    }
+    
+    @Override
+     public UpdatedAtStep createdAt(Temporal.DateTime createdAt) {
+        Objects.requireNonNull(createdAt);
+        this.createdAt = createdAt;
+        return this;
+    }
+    
+    @Override
+     public BuildStep updatedAt(Temporal.DateTime updatedAt) {
+        Objects.requireNonNull(updatedAt);
+        this.updatedAt = updatedAt;
+        return this;
+    }
+    
+    @Override
      public BuildStep conversation(Conversation conversation) {
         this.conversation = conversation;
+        return this;
+    }
+    
+    @Override
+     public BuildStep deleted(Boolean deleted) {
+        this._deleted = deleted;
         return this;
     }
     
@@ -177,10 +286,15 @@ public final class Message implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String content, Conversation conversation) {
+    private CopyOfBuilder(String id, String content, Conversation conversation, Integer version, Temporal.Timestamp lastChangedAt, Boolean deleted, Temporal.DateTime createdAt, Temporal.DateTime updatedAt) {
       super.id(id);
       super.content(content)
-        .conversation(conversation);
+        .version(version)
+        .lastChangedAt(lastChangedAt)
+        .createdAt(createdAt)
+        .updatedAt(updatedAt)
+        .conversation(conversation)
+        .deleted(deleted);
     }
     
     @Override
@@ -189,8 +303,33 @@ public final class Message implements Model {
     }
     
     @Override
+     public CopyOfBuilder version(Integer version) {
+      return (CopyOfBuilder) super.version(version);
+    }
+    
+    @Override
+     public CopyOfBuilder lastChangedAt(Temporal.Timestamp lastChangedAt) {
+      return (CopyOfBuilder) super.lastChangedAt(lastChangedAt);
+    }
+    
+    @Override
+     public CopyOfBuilder createdAt(Temporal.DateTime createdAt) {
+      return (CopyOfBuilder) super.createdAt(createdAt);
+    }
+    
+    @Override
+     public CopyOfBuilder updatedAt(Temporal.DateTime updatedAt) {
+      return (CopyOfBuilder) super.updatedAt(updatedAt);
+    }
+    
+    @Override
      public CopyOfBuilder conversation(Conversation conversation) {
       return (CopyOfBuilder) super.conversation(conversation);
+    }
+    
+    @Override
+     public CopyOfBuilder deleted(Boolean deleted) {
+      return (CopyOfBuilder) super.deleted(deleted);
     }
   }
   

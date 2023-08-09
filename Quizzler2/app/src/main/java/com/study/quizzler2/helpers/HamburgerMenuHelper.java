@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.study.quizzler2.R;
 import com.study.quizzler2.fragments.LoginFragment;
+import com.study.quizzler2.helpers.authentification.AuthHelper;
 
 public class HamburgerMenuHelper {
 

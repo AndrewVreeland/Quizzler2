@@ -1,4 +1,4 @@
-package com.study.quizzler2.helpers;
+package com.study.quizzler2.helpers.authentification;
 
 public class AuthResult {
     private boolean success;

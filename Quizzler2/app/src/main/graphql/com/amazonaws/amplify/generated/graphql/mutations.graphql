@@ -19,6 +19,9 @@ mutation CreateUser(
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -44,6 +47,9 @@ mutation UpdateUser(
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -69,6 +75,9 @@ mutation DeleteUser(
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -90,6 +99,9 @@ mutation CreateConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -99,6 +111,9 @@ mutation CreateConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -127,6 +142,9 @@ mutation UpdateConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -136,6 +154,9 @@ mutation UpdateConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -164,6 +185,9 @@ mutation DeleteConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -173,6 +197,9 @@ mutation DeleteConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -201,6 +228,9 @@ mutation CreateMessage(
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -213,6 +243,9 @@ mutation CreateMessage(
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -234,6 +267,9 @@ mutation UpdateMessage(
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -246,6 +282,9 @@ mutation UpdateMessage(
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -267,6 +306,9 @@ mutation DeleteMessage(
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -279,6 +321,9 @@ mutation DeleteMessage(
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename

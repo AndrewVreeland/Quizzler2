@@ -16,6 +16,9 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -38,6 +41,9 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -60,6 +66,9 @@ subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
       nextToken
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -80,6 +89,9 @@ subscription OnCreateConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -89,6 +101,9 @@ subscription OnCreateConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -116,6 +131,9 @@ subscription OnUpdateConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -125,6 +143,9 @@ subscription OnUpdateConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -152,6 +173,9 @@ subscription OnDeleteConversation(
         nextToken
         __typename
       }
+      _version
+      _lastChangedAt
+      _deleted
       createdAt
       updatedAt
       __typename
@@ -161,6 +185,9 @@ subscription OnDeleteConversation(
         id
         conversationID
         content
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -186,6 +213,9 @@ subscription OnCreateMessage($filter: ModelSubscriptionMessageFilterInput) {
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -198,6 +228,9 @@ subscription OnCreateMessage($filter: ModelSubscriptionMessageFilterInput) {
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -216,6 +249,9 @@ subscription OnUpdateMessage($filter: ModelSubscriptionMessageFilterInput) {
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -228,6 +264,9 @@ subscription OnUpdateMessage($filter: ModelSubscriptionMessageFilterInput) {
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
@@ -246,6 +285,9 @@ subscription OnDeleteMessage($filter: ModelSubscriptionMessageFilterInput) {
       user {
         id
         username
+        _version
+        _lastChangedAt
+        _deleted
         createdAt
         updatedAt
         __typename
@@ -258,6 +300,9 @@ subscription OnDeleteMessage($filter: ModelSubscriptionMessageFilterInput) {
       updatedAt
       __typename
     }
+    _version
+    _lastChangedAt
+    _deleted
     createdAt
     updatedAt
     __typename
