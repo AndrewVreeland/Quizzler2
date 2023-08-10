@@ -18,7 +18,7 @@ import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
 import com.study.quizzler2.helpers.chatGPT.Message;
-
+import com.study.quizzler2.helpers.DatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +126,9 @@ public class ChatFragment extends Fragment {
             messageList.add(new Message(message, sentBy, role));
             Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
 
+            if(sentBy.equals(Message.SENT_BY_ME)) {
+                DatabaseHelper.saveMessageToDynamoDB(message, "conversationID"); //TODO: replace "conversationID" with the actual conversation ID
+            }
             // Notify the adapter about the changes to the data
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
@@ -148,6 +151,9 @@ public class ChatFragment extends Fragment {
 
         // Enable the send button after sending the actual response.
         sendButton.setEnabled(true);
+
+        // After adding a response to the chat, save it to DynamoDB.
+        DatabaseHelper.saveMessageToDynamoDB(response.trim(), "conversationID"); // replace "conversationID" with the actual conversation ID if you have one
     }
     private void sendCustomGreetingMessage() {
         String greetingMessage = "Hello user, here is the additional information you requested:";
@@ -173,12 +179,7 @@ public class ChatFragment extends Fragment {
         }
     }
 
-
-
     public List<Message> getMessageList() {
         return messageList;
     }
-
-
-
 }
