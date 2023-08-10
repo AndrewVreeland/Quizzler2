@@ -1,5 +1,7 @@
 package com.study.quizzler2.fragments;
 
+import static com.study.quizzler2.helpers.DatabaseHelper.saveMessageToDynamoDB;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,16 +18,21 @@ import androidx.fragment.app.Fragment;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.events.ModelSyncedEvent;
 import com.amplifyframework.datastore.generated.model.Conversation;
 import com.amplifyframework.datastore.generated.model.ConversationTypeEnum;
 import com.amplifyframework.datastore.generated.model.User;
+import com.amplifyframework.hub.HubChannel;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
 import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.FragmentHelper;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
+import com.study.quizzler2.utils.DelayUtility;
 import com.study.quizzler2.utils.TopicUtility;
+
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -34,6 +41,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     private CircleMenu circleMenu;
     private ProgressBar progressBar;
     private ConstraintLayout constraintLayout;
+    private String conversationId;
     private TextView textView;
     private Button learnMoreButton;
     private String currentCategory = "";
@@ -135,38 +143,35 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     }
 
     private void createNewConversation() {
+
         // Retrieve the current authenticated user
-        Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
-            @Override
-            public void accept(com.amplifyframework.auth.AuthUser authUser) {
-                // Create an instance of the User model using the ID of the authenticated user
-                User userObj = User.justId(authUser.getUserId());
+        Amplify.Auth.getCurrentUser(user -> {
+            User userObj = User.justId(user.getUserId());
+            ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
-                // grabbing the current category for the random fact.
-                ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
+            // Build the Conversation object using the user instance
+            Conversation conversation = Conversation.builder()
+                    .user(userObj)
+                    .conversationType(conversationType)
+                    .build();
 
-                // Build the Conversation object using the user instance
-                Conversation conversation = Conversation.builder()
-                        .user(userObj)
-                        .conversationType(conversationType)
-                        .build();
+            // Save the conversation to DataStore
+            Amplify.DataStore.save(conversation,
+                    success -> {
+                        Log.i("CreateConversation", "Saved conversation: " + success.item().getId());
+                        // Store this ID to check against later, if needed
+                        conversationId = success.item().getId();
 
-                // Mutate the API to create the conversation
-                Amplify.API.mutate(
-                        ModelMutation.create(conversation),
-                        response -> {
-                            Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId());
-                            String conversationID = response.getData().getId();
-                            DatabaseHelper.ensureConversationExistsAndThenSaveMessage(conversationID, "I want to learn more about \"" + textView.getText().toString() + "\".");
-                        },
-                        error -> Log.e("CreateConversation", "Failed to create conversation.", error)
-                );
-            }
-        }, new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthException>() {
-            @Override
-            public void accept(com.amplifyframework.auth.AuthException authException) {
-                Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
-            }
+                        // Introduce a delay after saving
+                        DelayUtility.delayAction(() -> {
+                            // Add any other action you'd like to perform after the delay here
+                        }, 5000); // 5 seconds delay
+
+                    },
+                    error -> Log.e("CreateConversation", "Failed to save conversation.", error)
+            );
+        }, error -> {
+            Log.e("GetCurrentUser", "Failed to retrieve current user.", error);
         });
     }
 }

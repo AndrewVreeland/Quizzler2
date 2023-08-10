@@ -1,26 +1,35 @@
 package com.study.quizzler2.helpers;
 
+
 import android.util.Log;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.datastore.generated.model.Message;
 import com.amplifyframework.datastore.generated.model.Conversation;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
+
 public class DatabaseHelper {
 
     public static void saveMessageToDynamoDB(String content, String conversationID) {
+        Temporal.Timestamp timestamp = getCurrentAmplifyTimestamp();
+        Temporal.DateTime dateTime = getCurrentAmplifyDateTime();
+
         // Build a Conversation object using the conversationID
         Conversation conversation = Conversation.justId(conversationID);
 
         // Use the Message builder to create a Message object
         Message message = Message.builder()
-                .content(content)                   // Set content
-                .version(1)                         // Set version
-                .lastChangedAt(Temporal.DateTime.now())   // Use Temporal.DateTime for lastChangedAt
-                .createdAt(Temporal.DateTime.now())       // Use Temporal.DateTime for createdAt
-                .updatedAt(Temporal.DateTime.now())       // Use Temporal.DateTime for updatedAt
-                .conversation(conversation)         // Set conversation
-                .build();                           // Build the Message object
+                .content(content)
+                .version(1)
+                .lastChangedAt(timestamp)  // Using the Temporal.Timestamp
+                .createdAt(dateTime)       // Using the Temporal.DateTime
+                .updatedAt(dateTime)      // Using the Temporal.Timestamp again
+                .conversation(conversation)
+                .build();
 
         // Use Amplify DataStore to save the message
         Amplify.DataStore.save(
@@ -30,27 +39,13 @@ public class DatabaseHelper {
         );
     }
     public static void ensureConversationExistsAndThenSaveMessage(String conversationID, String messageContent) {
-        Amplify.DataStore.query(Conversation.class,
-                Conversation.ID.eq(conversationID),
-                conversationList -> {
-                    if (!conversationList.hasNext()) {
-                        // Conversation doesn't exist, so create it
-                        Conversation newConversation = Conversation.builder()
-                                .id(conversationID)
-                                // Add any other necessary fields here
-                                .build();
-
-                        Amplify.DataStore.save(newConversation,
-                                success -> {
-                                    Log.i("Amplify", "Saved conversation: " + success.item().getId());
-                                    saveMessageToDynamoDB(messageContent, conversationID);
-                                },
-                                error -> Log.e("Amplify", "Could not save conversation", error));
-                    } else {
-                        // Conversation exists, so proceed to save the message
-                        saveMessageToDynamoDB(messageContent, conversationID);
-                    }
-                },
-                error -> Log.e("Amplify", "Error querying for conversation", error));
+        saveMessageToDynamoDB(messageContent, conversationID);
+    }
+    private static Temporal.Timestamp getCurrentAmplifyTimestamp() {
+        return new Temporal.Timestamp(new Date());
+    }
+    private static Temporal.DateTime getCurrentAmplifyDateTime() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        return new Temporal.DateTime(zonedDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     }
 }
