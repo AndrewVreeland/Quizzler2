@@ -1,10 +1,7 @@
 package com.study.quizzler2.fragments;
 
-import static com.study.quizzler2.helpers.DatabaseHelper.saveMessageToDynamoDB;
-
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,22 +15,21 @@ import androidx.fragment.app.Fragment;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.core.Amplify;
-import com.amplifyframework.datastore.events.ModelSyncedEvent;
+import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.datastore.generated.model.Conversation;
 import com.amplifyframework.datastore.generated.model.ConversationTypeEnum;
+import com.amplifyframework.datastore.generated.model.Message;
 import com.amplifyframework.datastore.generated.model.User;
-import com.amplifyframework.hub.HubChannel;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
 import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.FragmentHelper;
+import com.study.quizzler2.interfaces.SaveConversationCallback;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
-import com.study.quizzler2.utils.DelayUtility;
 import com.study.quizzler2.utils.TopicUtility;
 
-import org.json.JSONObject;
-
+import java.util.Date;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment implements updateTriviaTextInterface.OnTextUpdateListener {
@@ -41,7 +37,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     private CircleMenu circleMenu;
     private ProgressBar progressBar;
     private ConstraintLayout constraintLayout;
-    private String conversationId;
     private TextView textView;
     private Button learnMoreButton;
     private String currentCategory = "";
@@ -57,7 +52,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
         progressBar = rootView.findViewById(R.id.progressBar);
         learnMoreButton = rootView.findViewById(R.id.learn_more_btn);
 
-        // Initially disable the textView and Learn More button
         textView.setVisibility(View.INVISIBLE);
         learnMoreButton.setVisibility(View.INVISIBLE);
         learnMoreButton.setEnabled(false);
@@ -71,11 +65,8 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 .setOnMenuSelectedListener(new OnMenuSelectedListener() {
                     @Override
                     public void onMenuSelected(int index) {
-                        // Hide the "Learn More" button when the menu is selected
                         learnMoreButton.setVisibility(View.INVISIBLE);
                         learnMoreButton.setEnabled(false);
-
-                        // Show the progress bar while loading
                         textView.setVisibility(View.INVISIBLE);
                         progressBar.setVisibility(View.VISIBLE);
 
@@ -87,7 +78,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                                 new FragmentHelper.FragmentReplaceListener() {
                                     @Override
                                     public void onFragmentReplaced() {
-                                        // After the fragment has been replaced, set the "Learn More" button visibility
                                         updateLearnMoreButtonVisibility();
                                     }
                                 }
@@ -104,8 +94,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
         textView.setText(newText);
         progressBar.setVisibility(View.INVISIBLE);
         textView.setVisibility(View.VISIBLE);
-
-        // Update the visibility of the "Learn More" button based on the progress bar
         updateLearnMoreButtonVisibility();
     }
 
@@ -115,26 +103,21 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
 
         if (learnMoreButton != null && progressBar != null) {
             if (progressBar.getVisibility() == View.VISIBLE) {
-                // If the progress bar is visible, hide and disable the button
                 learnMoreButton.setVisibility(View.INVISIBLE);
                 learnMoreButton.setEnabled(false);
             } else {
-                // If the progress bar is not visible, make the button visible and enable it
                 learnMoreButton.setVisibility(View.VISIBLE);
                 learnMoreButton.setEnabled(true);
 
-                // Set OnClickListener for the button
                 learnMoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Handle the fragment transaction when the button is clicked
                         requireActivity().getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, ChatFragment.newInstance("I want to learn more about \"" + textView.getText().toString() + "\"."))
                                 .addToBackStack(null)
                                 .commit();
 
-                        // Create a new conversation
                         createNewConversation();
                     }
                 });
@@ -143,35 +126,58 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     }
 
     private void createNewConversation() {
+        Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
+            @Override
+            public void accept(com.amplifyframework.auth.AuthUser authUser) {
+                User userObj = User.justId(authUser.getUserId());
+                ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
-        // Retrieve the current authenticated user
-        Amplify.Auth.getCurrentUser(user -> {
-            User userObj = User.justId(user.getUserId());
-            ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
+                Conversation conversation = Conversation.builder()
+                        .user(userObj)
+                        .conversationType(conversationType)
+                        .build();
 
-            // Build the Conversation object using the user instance
-            Conversation conversation = Conversation.builder()
-                    .user(userObj)
-                    .conversationType(conversationType)
-                    .build();
-
-            // Save the conversation to DataStore
-            Amplify.DataStore.save(conversation,
-                    success -> {
-                        Log.i("CreateConversation", "Saved conversation: " + success.item().getId());
-                        // Store this ID to check against later, if needed
-                        conversationId = success.item().getId();
-
-                        // Introduce a delay after saving
-                        DelayUtility.delayAction(() -> {
-                            // Add any other action you'd like to perform after the delay here
-                        }, 5000); // 5 seconds delay
-
-                    },
-                    error -> Log.e("CreateConversation", "Failed to save conversation.", error)
-            );
-        }, error -> {
-            Log.e("GetCurrentUser", "Failed to retrieve current user.", error);
+                Amplify.API.mutate(
+                        ModelMutation.create(conversation),
+                        response -> {
+                            Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId());
+                            String conversationID = response.getData().getId();
+                            // Only save the message once the conversation has been successfully created
+                            saveMessageAfterConversation(conversationID, "I want to learn more about \"" + textView.getText().toString() + "\".");
+                        },
+                        error -> Log.e("CreateConversation", "Failed to create conversation.", error)
+                );
+            }
+        }, new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthException>() {
+            @Override
+            public void accept(com.amplifyframework.auth.AuthException authException) {
+                Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
+            }
         });
+    }
+    private void saveMessageAfterConversation(String conversationID, String messageText) {
+        // Create a reference to the Conversation with just its ID for referencing purposes
+        Conversation conversationReference = Conversation.justId(conversationID);
+
+        // Create a new message with the given text and linked to the conversation reference
+        Message newMessage = Message.builder()
+                .content(messageText)
+                .version(1) // You may need a mechanism to manage versioning if it's not auto-incremented
+                .lastChangedAt(new Temporal.Timestamp(new Date())) // Use current time for the last changed timestamp
+                .createdAt(DatabaseHelper.getCurrentAmplifyDateTime())
+                .updatedAt(DatabaseHelper.getCurrentAmplifyDateTime())
+                .conversation(conversationReference) // Link to the conversation
+                .build();
+
+        // Now, mutate the API to save the message
+        Amplify.API.mutate(
+                ModelMutation.create(newMessage),
+                response -> {
+                    Log.i("SaveMessage", "Added message with id: " + response.getData().getId());
+                },
+                error -> {
+                    Log.e("SaveMessage", "Failed to save message.", error);
+                }
+        );
     }
 }

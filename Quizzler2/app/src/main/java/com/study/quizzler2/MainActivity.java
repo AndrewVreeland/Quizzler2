@@ -1,11 +1,14 @@
 package com.study.quizzler2;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.amplifyframework.core.Amplify;
 import com.google.android.material.navigation.NavigationView;
 import com.study.quizzler2.fragments.HomeFragment;
 import com.study.quizzler2.fragments.LoginFragment;
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         userManager = new UserManager(this);
         authHelper = new AuthHelper(this, userManager);

@@ -1,16 +1,16 @@
 package com.study.quizzler2.helpers;
 
-
 import android.util.Log;
+
+import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.core.model.temporal.Temporal;
-import com.amplifyframework.datastore.generated.model.Message;
 import com.amplifyframework.datastore.generated.model.Conversation;
+import com.amplifyframework.datastore.generated.model.Message;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-
 
 public class DatabaseHelper {
 
@@ -25,26 +25,29 @@ public class DatabaseHelper {
         Message message = Message.builder()
                 .content(content)
                 .version(1)
-                .lastChangedAt(timestamp)  // Using the Temporal.Timestamp
-                .createdAt(dateTime)       // Using the Temporal.DateTime
-                .updatedAt(dateTime)      // Using the Temporal.Timestamp again
+                .lastChangedAt(timestamp)
+                .createdAt(dateTime)
+                .updatedAt(dateTime)
                 .conversation(conversation)
                 .build();
 
-        // Use Amplify DataStore to save the message
-        Amplify.DataStore.save(
-                message,
-                success -> Log.i("Amplify", "Saved item: " + success.item().getContent()),
-                error -> Log.e("Amplify", "Could not save item to DataStore", error)
+        // Use Amplify API to save the message
+        Amplify.API.mutate(
+                ModelMutation.create(message),
+                success -> Log.i("Amplify", "Saved item: " + success.getData().getContent()),
+                error -> Log.e("Amplify", "Could not save item", error)
         );
     }
-    public static void ensureConversationExistsAndThenSaveMessage(String conversationID, String messageContent) {
+
+    public static void saveMessageAfterConversation(String conversationID, String messageContent) {
         saveMessageToDynamoDB(messageContent, conversationID);
     }
+
     private static Temporal.Timestamp getCurrentAmplifyTimestamp() {
         return new Temporal.Timestamp(new Date());
     }
-    private static Temporal.DateTime getCurrentAmplifyDateTime() {
+
+    public static Temporal.DateTime getCurrentAmplifyDateTime() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         return new Temporal.DateTime(zonedDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     }

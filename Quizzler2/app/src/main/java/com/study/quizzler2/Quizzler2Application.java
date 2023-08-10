@@ -19,9 +19,6 @@ public class Quizzler2Application extends Application {
         try {
 
             Amplify.addPlugin(new AWSApiPlugin());
-
-            Amplify.addPlugin(new AWSDataStorePlugin());
-
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
 
 
