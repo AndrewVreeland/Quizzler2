@@ -37,7 +37,6 @@ public class FragmentHelper {
                 // Convert the category string into the corresponding enum
                 ConversationTypeEnum categoryEnum = TopicUtility.getEnumFromCategory(category);
 
-                // You can now use categoryEnum for further processing or storage
 
                 // Update the text with the random fact on the UI thread
                 fragmentView.post(new Runnable() {

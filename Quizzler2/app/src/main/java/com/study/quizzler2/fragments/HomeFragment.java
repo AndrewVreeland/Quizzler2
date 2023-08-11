@@ -25,12 +25,10 @@ import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
 import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.FragmentHelper;
-import com.study.quizzler2.interfaces.SaveConversationCallback;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
 import com.study.quizzler2.utils.TopicUtility;
 
 import java.util.Date;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment implements updateTriviaTextInterface.OnTextUpdateListener {
 
