@@ -73,8 +73,8 @@ public class ChatAPIClient {
             messagesList.put(new JSONObject().put("role", "system").put("content", instruction1));
 
             // Add previous user and bot messages to the messages list
-            for (Message message : chatFragment.getMessageList()) {
-                String role = message.getSentBy().equals(Message.SENT_BY_ME) ? "user" : "assistant";
+            for (LocalMessage message : chatFragment.getMessageList()) {
+                String role = message.getSentBy().equals(LocalMessage.SENT_BY_ME) ? "user" : "assistant";
                 messagesList.put(new JSONObject().put("role", role).put("content", message.getMessage()));
             }
 

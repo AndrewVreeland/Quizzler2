@@ -8,14 +8,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.study.quizzler2.R;
-import com.study.quizzler2.helpers.chatGPT.Message;
+import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
 
-    List<Message> messageList;
+    List<LocalMessage> messageList;
 
-    public MessageAdapter(List<Message> messageList) {
+    public MessageAdapter(List<LocalMessage> messageList) {
         this.messageList = messageList;
     }
 
@@ -40,8 +40,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             return;
         }
 
-        Message message = messageList.get(position);
-        if (message.getSentBy().equals(Message.SENT_BY_ME)) {
+        LocalMessage message = messageList.get(position);
+        if (message.getSentBy().equals(LocalMessage.SENT_BY_ME)) {
             holder.leftChatView.setVisibility(View.GONE);
             holder.rightChatView.setVisibility(View.VISIBLE);
             holder.rightTextView.setText(message.getMessage());
@@ -59,8 +59,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
     @Override
     public int getItemViewType(int position) {
-        Message message = messageList.get(position);
-        if (message.getSentBy().equals(Message.SENT_BY_ME)) {
+        LocalMessage message = messageList.get(position);
+        if (message.getSentBy().equals(LocalMessage.SENT_BY_ME)) {
             return 1;
         } else {
             if (isQuestionNullOrEmpty(position)) {

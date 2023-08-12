@@ -15,9 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
-import com.study.quizzler2.helpers.chatGPT.Message;
+import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 import com.study.quizzler2.helpers.DatabaseHelper;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import okhttp3.MediaType;
 
@@ -30,7 +31,7 @@ public class ChatFragment extends Fragment {
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
-    private List<Message> messageList;
+    private List<LocalMessage> messageList;
     private MessageAdapter messageAdapter;
     private ChatAPIClient chatAPIClient;
 
@@ -46,6 +47,11 @@ public class ChatFragment extends Fragment {
         fragment.initialMessage = initialMessage;
         fragment.conversationID = conversationID;
         return fragment;
+    }
+
+    // Overloaded method for newInstance
+    public static ChatFragment newInstance(String initialMessage) {
+        return newInstance(initialMessage, null);
     }
 
     @Override
@@ -71,14 +77,28 @@ public class ChatFragment extends Fragment {
         chatAPIClient = new ChatAPIClient(this);
 
         if (conversationID != null) {
-            List<Message> messages = DatabaseHelper.fetchMessagesForConversation(conversationID);
-            messageList.addAll(messages);
-            messageAdapter.notifyDataSetChanged();
+
+            DatabaseHelper.fetchMessagesForConversation(conversationID,
+                    messages -> {
+                        if(messages instanceof Collection<?>) {
+                            for(Object obj : (Collection<?>)messages) {
+                                if(obj instanceof LocalMessage) {
+                                    messageList.add((LocalMessage) obj);
+                                }
+                            }
+                            messageAdapter.notifyDataSetChanged();
+                        }
+                    },
+                    error -> {
+                        Log.e("ChatFragment", "Failed to fetch messages.", error);
+                    }
+            );
+
         }
 
         if (initialMessage != null && !initialMessage.isEmpty()) {
-            addToChat(initialMessage, Message.SENT_BY_ME, "user");
-            addToChat("Typing...", Message.SENT_BY_BOT, "system");
+            addToChat(initialMessage, LocalMessage.SENT_BY_ME, "user");
+            addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
             isTypingMessageDisplayed = true;
             chatAPIClient.callAPI(initialMessage, requireContext());
         }
@@ -87,8 +107,8 @@ public class ChatFragment extends Fragment {
             String question = messageEditText.getText().toString().trim();
             if (!question.isEmpty()) {
                 sendButton.setEnabled(false);
-                addToChat(question, Message.SENT_BY_ME, "user");
-                addToChat("Typing...", Message.SENT_BY_BOT, "system");
+                addToChat(question, LocalMessage.SENT_BY_ME, "user");
+                addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
                 isTypingMessageDisplayed = true;
                 messageEditText.setText("");
                 chatAPIClient.callAPI(question, requireContext());
@@ -105,9 +125,9 @@ public class ChatFragment extends Fragment {
                 messageList.remove(messageList.size() - 1);
                 isTypingMessageDisplayed = false;
             }
-            messageList.add(new Message(message, sentBy, role));
+            messageList.add(new LocalMessage(message, sentBy, role));
             Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
-            if(sentBy.equals(Message.SENT_BY_ME)) {
+            if(sentBy.equals(LocalMessage.SENT_BY_ME)) {
                 DatabaseHelper.saveMessageToDynamoDB(message, conversationID != null ? conversationID : "fallbackID");
             }
             messageAdapter.notifyDataSetChanged();
@@ -130,11 +150,11 @@ public class ChatFragment extends Fragment {
 
     private void sendCustomGreetingMessage() {
         String greetingMessage = "Hello user, here is the additional information you requested:";
-        addToChat(greetingMessage, Message.SENT_BY_BOT, "system");
+        addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
     }
 
     private void sendActualResponse(String response) {
-        addToChat(response, Message.SENT_BY_BOT, "system");
+        addToChat(response, LocalMessage.SENT_BY_BOT, "system");
         Log.d("ChatFragment", "sendActualResponse: messageList size = " + messageList.size());
     }
 
@@ -147,7 +167,7 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    public List<Message> getMessageList() {
+    public List<LocalMessage> getMessageList() {
         return messageList;
     }
 }

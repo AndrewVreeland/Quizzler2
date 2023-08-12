@@ -8,13 +8,19 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.amplifyframework.core.Amplify;
 import com.google.android.material.navigation.NavigationView;
+import com.study.quizzler2.adapters.ConversationAdapter;
 import com.study.quizzler2.fragments.HomeFragment;
 import com.study.quizzler2.fragments.LoginFragment;
+import com.study.quizzler2.helpers.ConversationHelper;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.helpers.authentification.AuthHelper;
 import com.study.quizzler2.helpers.HamburgerMenuHelper;
+import com.study.quizzler2.helpers.DatabaseHelper;
+import com.study.quizzler2.utils.ConversationItem;
+
 import java.util.Objects;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ActionBarVisibility {
 
@@ -22,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
     private UserManager userManager;
     private AuthHelper authHelper;
     private HamburgerMenuHelper hamburgerMenuHelper;
-    private YourRecyclerAdapter yourAdapter; // Assuming you have an adapter named YourRecyclerAdapter
+    private ConversationAdapter conversationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-        List<YourDataType> data = fetchDataOrInitializeData(); // Fetch or initialize the data for your RecyclerView
-        yourAdapter = new YourRecyclerAdapter(data);
+        // Fetch the list of conversations using Amplify
+        fetchConversationsFromDynamoDB();
 
         if (savedInstanceState == null) {
             if (userManager.isLoggedIn()) {
@@ -50,8 +56,28 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
             }
         }
 
-        hamburgerMenuHelper = new HamburgerMenuHelper(this, drawerLayout, authHelper, yourAdapter);
-        hamburgerMenuHelper.setupNavigationView(navigationView);
+
+
+    }
+
+    private void fetchConversationsFromDynamoDB() {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        int limit = 100;
+
+        DatabaseHelper.getConversations(limit,
+                conversations -> {
+                    List<ConversationItem> conversationItems = ConversationHelper.convertToConversationItemList(conversations);
+                    conversationAdapter = new ConversationAdapter(conversationItems, conversationId -> {
+                        // Handle conversation item click
+                    });
+
+                    // Setup HamburgerMenuHelper here
+                    hamburgerMenuHelper = new HamburgerMenuHelper(MainActivity.this, drawerLayout, authHelper, conversations);
+                    hamburgerMenuHelper.setupNavigationView(navigationView); // This line is now inside the lambda, after hamburgerMenuHelper is instantiated
+                },
+                error -> {
+                    Log.e("MainActivity", "Failed to fetch conversations.", error);
+                });
     }
 
     @Override

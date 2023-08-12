@@ -4,18 +4,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.study.quizzler2.R;
 import com.study.quizzler2.utils.ConversationItem;
-
 import java.util.List;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ConversationViewHolder> {
 
-    private static List<ConversationItem> conversationList;
+    private List<ConversationItem> conversationList; // Removed the static keyword
     private OnConversationClickListener listener;
 
     public interface OnConversationClickListener {
@@ -44,7 +41,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return conversationList.size();
     }
 
-    public static class ConversationViewHolder extends RecyclerView.ViewHolder {
+    public class ConversationViewHolder extends RecyclerView.ViewHolder { // Removed static
 
         private TextView snippetTextView;
 
