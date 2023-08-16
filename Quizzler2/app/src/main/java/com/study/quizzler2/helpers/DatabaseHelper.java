@@ -1,5 +1,7 @@
 package com.study.quizzler2.helpers;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.amplifyframework.api.graphql.GraphQLResponse;
@@ -85,7 +87,7 @@ public class DatabaseHelper {
         );
     }
 
-    public static void fetchMessagesForConversation(String conversationId, Consumer<List<Message>> onSuccess, Consumer<Throwable> onError) {
+    public static void fetchMessagesForConversation(Context context, String conversationId, Consumer<List<Message>> onSuccess, Consumer<Throwable> onError) {
         // Query messages based on the conversationID
         Amplify.API.query(
                 ModelQuery.list(Message.class, Message.CONVERSATION.eq(conversationId)),
@@ -93,7 +95,13 @@ public class DatabaseHelper {
                     if (response.hasData()) {
                         List<Message> messagesList = StreamSupport.stream(response.getData().getItems().spliterator(), false)
                                 .collect(Collectors.toList());
-                        onSuccess.accept(messagesList);
+
+                        // Run the UI update code on the main thread using the provided Context
+                        if (context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(() -> {
+                                onSuccess.accept(messagesList);
+                            });
+                        }
                     }
 
                     if (response.hasErrors()) {

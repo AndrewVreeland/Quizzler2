@@ -1,5 +1,6 @@
 package com.study.quizzler2.helpers;
 
+import android.util.Log;
 import android.view.MenuItem;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,26 +16,33 @@ import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.fragments.LoginFragment;
 import com.study.quizzler2.helpers.authentification.AuthHelper;
 import com.study.quizzler2.utils.ConversationItem;
+
 import java.util.List;
 import java.util.Objects;
 
 public class HamburgerMenuHelper {
 
-    private AppCompatActivity activity;
+    private final AppCompatActivity activity;
     private DrawerLayout drawerLayout;
     private List<Conversation> conversations;
     private ActionBarDrawerToggle toggle;
-    private AuthHelper authHelper;
+    private final AuthHelper authHelper;
+    private ConversationAdapter conversationAdapter;
 
-    public HamburgerMenuHelper(AppCompatActivity activity, DrawerLayout drawerLayout, AuthHelper authHelper, List<Conversation> conversations) {
+    public HamburgerMenuHelper(AppCompatActivity activity, DrawerLayout drawerLayout, AuthHelper authHelper, List<Conversation> conversations, ConversationAdapter adapter) {
         this.activity = activity;
         this.drawerLayout = drawerLayout;
         this.authHelper = authHelper;
         this.conversations = conversations;
+        this.conversationAdapter = adapter;
         setupHamburgerIcon();
         setupDrawerToggle();
         setupRecyclerView();
     }
+
+
+
+
 
     private void setupHamburgerIcon() {
         activity.runOnUiThread(() -> {
@@ -42,15 +50,21 @@ public class HamburgerMenuHelper {
         });
     }
 
+
+
     private void setupDrawerToggle() {
         toggle = new ActionBarDrawerToggle(activity, drawerLayout, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean handleOptionsItemSelected(MenuItem item) {
         if (toggle.onOptionsItemSelected(item)) {
-            return true;
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
         }
         return false;
     }
@@ -62,16 +76,7 @@ public class HamburgerMenuHelper {
                     // Do something for home
                     break;
                 case R.id.nav_logout:
-                    authHelper.handleSignOut(result -> {
-                        // This lambda will be called after the sign-out process has been completed.
-                        activity.runOnUiThread(() -> {
-                            if (result.isSuccess()) {
-                                activity.getSupportFragmentManager().beginTransaction()
-                                        .replace(R.id.fragment_container, new LoginFragment())
-                                        .commit();
-                            }
-                        });
-                    });
+                    handleLogout();
                     break;
                 // Handle other ids
             }
@@ -80,26 +85,70 @@ public class HamburgerMenuHelper {
         });
     }
 
+    private void handleLogout() {
+        authHelper.handleSignOut(result -> {
+            // This lambda will be called after the sign-out process has been completed.
+            activity.runOnUiThread(() -> {
+                if (result.isSuccess()) {
+                    activity.getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new LoginFragment())
+                            .commit();
+                }
+            });
+        });
+    }
+
     private void setupRecyclerView() {
         activity.runOnUiThread(() -> {
             NavigationView navigationView = activity.findViewById(R.id.nav_view);
-            RecyclerView recyclerView = navigationView.getHeaderView(0).findViewById(R.id.recyclerViewInDrawer);
+            RecyclerView recyclerView = navigationView.findViewById(R.id.recyclerViewInDrawer);
             recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
-            // Convert the list of Conversation objects to ConversationItem objects.
             List<ConversationItem> conversationItems = ConversationHelper.convertToConversationItemList(conversations);
 
-            // Set up the adapter and assign it to the RecyclerView.
-            ConversationAdapter adapter = new ConversationAdapter(conversationItems, new ConversationAdapter.OnConversationClickListener() {
-                @Override
-                public void onConversationClick(String conversationID) {
-                    ChatFragment chatFragment = ChatFragment.newInstance(null, conversationID);
-                    // Display the fragment.
-                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, chatFragment).commit();
-                }
+            conversationAdapter = new ConversationAdapter(conversationItems, conversationID -> {
+                ChatFragment chatFragment = ChatFragment.newInstance(null, conversationID);
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, chatFragment).commit();
             });
 
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(conversationAdapter);
+        });
+    }
+
+    public void updateConversations(List<Conversation> updatedConversations) {
+        this.conversations = updatedConversations;
+
+        activity.runOnUiThread(() -> {
+            Log.d("HamburgerMenuHelper", "Updating conversations...");
+            NavigationView navigationView = activity.findViewById(R.id.nav_view);
+            RecyclerView recyclerView = navigationView.findViewById(R.id.recyclerViewInDrawer);
+            List<ConversationItem> conversationItems = ConversationHelper.convertToConversationItemList(updatedConversations);
+            conversationAdapter.updateData(conversationItems);
+            Log.d("HamburgerMenuHelper", "Notifying adapter of data change...");
+            conversationAdapter.notifyDataSetChanged(); // Notify adapter of the data change
+        });
+    }
+
+    public void addConversation(Conversation newConversation) {
+        Log.d("HamburgerMenuHelper", "Adding new conversation...");
+
+        // Add the new conversation to the local list.
+        this.conversations.add(newConversation);
+
+        // Convert the new conversation to ConversationItem format
+        List<ConversationItem> newConversationItems = ConversationHelper.convertToConversationItemList(List.of(newConversation));
+
+        // Update the RecyclerView to reflect the addition of the new conversation
+        activity.runOnUiThread(() -> {
+            conversationAdapter.updateData(newConversationItems);
+            NavigationView navigationView = activity.findViewById(R.id.nav_view);
+            RecyclerView recyclerView = navigationView.findViewById(R.id.recyclerViewInDrawer);
+            recyclerView.smoothScrollToPosition(conversationAdapter.getItemCount() - 1);
+            Log.d("HamburgerMenuHelper", "Notifying adapter of data change after adding conversation...");
+            conversationAdapter.notifyDataSetChanged();
+
+            // Update the conversations in the HamburgerMenuHelper and notify the adapter
+            updateConversations(conversations);
         });
     }
 }

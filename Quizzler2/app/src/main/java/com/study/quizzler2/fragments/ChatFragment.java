@@ -78,15 +78,18 @@ public class ChatFragment extends Fragment {
 
         if (conversationID != null) {
 
-            DatabaseHelper.fetchMessagesForConversation(conversationID,
+            DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
-                        if(messages instanceof Collection<?>) {
-                            for(Object obj : (Collection<?>)messages) {
-                                if(obj instanceof LocalMessage) {
+                        if (messages instanceof Collection<?>) {
+                            for (Object obj : (Collection<?>) messages) {
+                                if (obj instanceof LocalMessage) {
                                     messageList.add((LocalMessage) obj);
                                 }
                             }
-                            messageAdapter.notifyDataSetChanged();
+
+                            requireActivity().runOnUiThread(() -> {
+                                messageAdapter.notifyDataSetChanged();
+                            });
                         }
                     },
                     error -> {

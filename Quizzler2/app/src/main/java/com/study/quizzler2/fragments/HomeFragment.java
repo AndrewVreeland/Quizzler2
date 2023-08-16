@@ -10,8 +10,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.core.Amplify;
@@ -23,32 +27,44 @@ import com.amplifyframework.datastore.generated.model.User;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
 import com.study.quizzler2.R;
+import com.study.quizzler2.adapters.ConversationAdapter;
 import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.FragmentHelper;
+import com.study.quizzler2.helpers.HamburgerMenuHelper;
+import com.study.quizzler2.helpers.authentification.AuthHelper;
 import com.study.quizzler2.interfaces.updateTriviaTextInterface;
+import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.utils.TopicUtility;
+import com.study.quizzler2.helpers.ConversationHelper;
+import com.study.quizzler2.utils.ConversationItem;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class HomeFragment extends Fragment implements updateTriviaTextInterface.OnTextUpdateListener {
 
-    private CircleMenu circleMenu;
     private ProgressBar progressBar;
     private ConstraintLayout constraintLayout;
     private TextView textView;
     private Button learnMoreButton;
     private String currentCategory = "";
+    private HamburgerMenuHelper hamburgerMenuHelper;
+
+    private List<Conversation> conversations;
+    private ConversationAdapter conversationAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         constraintLayout = rootView.findViewById(R.id.constraint_layout);
-        circleMenu = rootView.findViewById(R.id.circle_menu);
+        CircleMenu circleMenu = rootView.findViewById(R.id.circle_menu);
         textView = rootView.findViewById(R.id.homeFragmentTopTextView);
         progressBar = rootView.findViewById(R.id.progressBar);
         learnMoreButton = rootView.findViewById(R.id.learn_more_btn);
+        conversations = new ArrayList<>();
+        List<ConversationItem> conversationItems = ConversationHelper.convertToConversationItemList(conversations);
 
         textView.setVisibility(View.INVISIBLE);
         learnMoreButton.setVisibility(View.INVISIBLE);
@@ -83,8 +99,24 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                     }
                 });
 
+
+
+        UserManager userManager = new UserManager(requireContext());
+        AuthHelper authHelper = new AuthHelper((FragmentActivity) requireActivity(), userManager);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        assert activity != null;
+        DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
+
+        // Initialize the conversationAdapter here
+        conversationAdapter = new ConversationAdapter(conversationItems, null);
+
+        // Initialize the hamburgerMenuHelper
+        hamburgerMenuHelper = new HamburgerMenuHelper(activity, drawerLayout, authHelper, conversations, conversationAdapter);
+
         return rootView;
     }
+
 
     @Override
     public void updateText(String newText, String category) {
@@ -140,34 +172,38 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                         response -> {
                             Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId());
                             String conversationID = response.getData().getId();
-                            // Only save the message once the conversation has been successfully created
                             saveMessageAfterConversation(conversationID, "I want to learn more about \"" + textView.getText().toString() + "\".");
+
+                            requireActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hamburgerMenuHelper.addConversation(conversation);
+                                }
+                            });
                         },
                         error -> Log.e("CreateConversation", "Failed to create conversation.", error)
                 );
             }
         }, new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthException>() {
             @Override
-            public void accept(com.amplifyframework.auth.AuthException authException) {
+            public void accept(@NonNull com.amplifyframework.auth.AuthException authException) {
                 Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
             }
         });
     }
+
     private void saveMessageAfterConversation(String conversationID, String messageText) {
-        // Create a reference to the Conversation with just its ID for referencing purposes
         Conversation conversationReference = Conversation.justId(conversationID);
 
-        // Create a new message with the given text and linked to the conversation reference
         Message newMessage = Message.builder()
                 .content(messageText)
-                .version(1) // You may need a mechanism to manage versioning if it's not auto-incremented
-                .lastChangedAt(new Temporal.Timestamp(new Date())) // Use current time for the last changed timestamp
+                .version(1)
+                .lastChangedAt(new Temporal.Timestamp(new Date()))
                 .createdAt(DatabaseHelper.getCurrentAmplifyDateTime())
                 .updatedAt(DatabaseHelper.getCurrentAmplifyDateTime())
-                .conversation(conversationReference) // Link to the conversation
+                .conversation(conversationReference)
                 .build();
 
-        // Now, mutate the API to save the message
         Amplify.API.mutate(
                 ModelMutation.create(newMessage),
                 response -> {
@@ -177,5 +213,11 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                     Log.e("SaveMessage", "Failed to save message.", error);
                 }
         );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        requireActivity().overridePendingTransition(0, 0);
     }
 }

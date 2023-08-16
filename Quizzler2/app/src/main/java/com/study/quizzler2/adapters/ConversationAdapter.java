@@ -1,10 +1,12 @@
 package com.study.quizzler2.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.study.quizzler2.R;
 import com.study.quizzler2.utils.ConversationItem;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ConversationViewHolder> {
 
-    private List<ConversationItem> conversationList; // Removed the static keyword
+    private List<ConversationItem> conversationList;
     private OnConversationClickListener listener;
 
     public interface OnConversationClickListener {
@@ -27,6 +29,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @NonNull
     @Override
     public ConversationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the item layout and create a ConversationViewHolder
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.conversation_item_layout, parent, false);
         return new ConversationViewHolder(view, listener);
     }
@@ -41,7 +44,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return conversationList.size();
     }
 
-    public class ConversationViewHolder extends RecyclerView.ViewHolder { // Removed static
+    public class ConversationViewHolder extends RecyclerView.ViewHolder {
 
         private TextView snippetTextView;
 
@@ -58,7 +61,21 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
 
         public void bind(ConversationItem item) {
-            snippetTextView.setText(item.getSnippet());
+            String trimmedMessage = item.getSnippet().replace("I want to learn more about", "").replace("\"", "").trim();
+            snippetTextView.setText(trimmedMessage);
         }
     }
+
+
+
+    public void updateData(List<ConversationItem> newConversationItems) {
+        Log.d("UPDATE_DATA", "New items: " + newConversationItems);
+
+        int oldSize = this.conversationList.size();
+        this.conversationList.addAll(newConversationItems);
+        notifyDataSetChanged();
+    }
+
+
+
 }
