@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.amplifyframework.datastore.generated.model.Message;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
@@ -34,9 +36,10 @@ public class ChatFragment extends Fragment {
     private List<LocalMessage> messageList;
     private MessageAdapter messageAdapter;
     private ChatAPIClient chatAPIClient;
-
+    private List<Message> messagesList = new ArrayList<>();
     private String conversationID; // Variable to store the conversation ID
     private String initialMessage; // Variable to store the initial message
+    int messagePosition = 0;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -59,7 +62,6 @@ public class ChatFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -77,14 +79,12 @@ public class ChatFragment extends Fragment {
         chatAPIClient = new ChatAPIClient(this);
 
         if (conversationID != null) {
-
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
-                        if (messages instanceof Collection<?>) {
-                            for (Object obj : (Collection<?>) messages) {
-                                if (obj instanceof LocalMessage) {
-                                    messageList.add((LocalMessage) obj);
-                                }
+                        if (messages != null) {
+                            for (Message message : messages) {
+                                messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
+                                messagePosition++;
                             }
 
                             requireActivity().runOnUiThread(() -> {
@@ -96,7 +96,6 @@ public class ChatFragment extends Fragment {
                         Log.e("ChatFragment", "Failed to fetch messages.", error);
                     }
             );
-
         }
 
         if (initialMessage != null && !initialMessage.isEmpty()) {
@@ -111,6 +110,7 @@ public class ChatFragment extends Fragment {
             if (!question.isEmpty()) {
                 sendButton.setEnabled(false);
                 addToChat(question, LocalMessage.SENT_BY_ME, "user");
+                DatabaseHelper.saveMessageAfterConversation(conversationID, question); // Save the message to DynamoDB
                 addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
                 isTypingMessageDisplayed = true;
                 messageEditText.setText("");
@@ -170,7 +170,11 @@ public class ChatFragment extends Fragment {
         }
     }
 
+
+
     public List<LocalMessage> getMessageList() {
         return messageList;
     }
+
+
 }

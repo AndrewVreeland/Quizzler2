@@ -13,12 +13,14 @@ import com.amplifyframework.core.Consumer;
 import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.datastore.generated.model.Conversation;
 import com.amplifyframework.datastore.generated.model.Message;
+import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,6 +117,17 @@ public class DatabaseHelper {
                     onError.accept(failure);
                 }
         );
+    }
+
+    public static List<LocalMessage> convertFetchedMessagesToLocal(List<Message> fetchedMessagesFromAWS) {
+        int position = 0;
+        List<LocalMessage> localMessages = new ArrayList<>();
+
+        for (Message amplifyMessage : fetchedMessagesFromAWS) {
+            localMessages.add(LocalMessage.fromAmplifyMessageBySequence(amplifyMessage, position));
+            position++;
+        }
+        return localMessages;
     }
 
 
