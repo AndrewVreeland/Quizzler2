@@ -45,12 +45,11 @@ import java.util.List;
 public class HomeFragment extends Fragment implements updateTriviaTextInterface.OnTextUpdateListener {
 
     private ProgressBar progressBar;
-    private ConstraintLayout constraintLayout;
     private TextView textView;
     private Button learnMoreButton;
     private String currentCategory = "";
     private HamburgerMenuHelper hamburgerMenuHelper;
-
+    private String mCurrentConversationID;
     private List<Conversation> conversations;
     private ConversationAdapter conversationAdapter;
 
@@ -58,7 +57,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        constraintLayout = rootView.findViewById(R.id.constraint_layout);
+
         CircleMenu circleMenu = rootView.findViewById(R.id.circle_menu);
         textView = rootView.findViewById(R.id.homeFragmentTopTextView);
         progressBar = rootView.findViewById(R.id.progressBar);
@@ -142,12 +141,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 learnMoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        requireActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, ChatFragment.newInstance("I want to learn more about \"" + textView.getText().toString() + "\"."))
-                                .addToBackStack(null)
-                                .commit();
-
                         createNewConversation();
                     }
                 });
@@ -162,22 +155,33 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 User userObj = User.justId(authUser.getUserId());
                 ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
+                Log.d("DebugUserObject", "User Object ID: " + userObj.getId());
                 Conversation conversation = Conversation.builder()
                         .user(userObj)
                         .conversationType(conversationType)
                         .build();
-
+                Log.d("DebugConversation", "Conversation Object: " + conversation.toString());
                 Amplify.API.mutate(
                         ModelMutation.create(conversation),
                         response -> {
-                            Log.i("CreateConversation", "Added conversation with id: " + response.getData().getId());
-                            String conversationID = response.getData().getId();
-                            saveMessageAfterConversation(conversationID, "I want to learn more about \"" + textView.getText().toString() + "\".");
+                            Log.d("DebugAPIResponse", "Full API Response: " + response.toString());
+                            Log.d("DebugAPIResponse", "Returned Conversation ID: " + response.getData().getId());
+                            mCurrentConversationID = response.getData().getId();
+                            String initialMessage = "I want to learn more about \"" + textView.getText().toString() + "\".";
+                            saveMessageAfterConversation(mCurrentConversationID, initialMessage);
 
                             requireActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     hamburgerMenuHelper.addConversation(conversation);
+
+                                    // Now navigate to the ChatFragment
+                                    requireActivity().getSupportFragmentManager()
+                                            .beginTransaction()
+                                            .replace(R.id.fragment_container, ChatFragment.newInstance(initialMessage, mCurrentConversationID))
+                                            .addToBackStack(null)
+                                            .commit();
+                                    Log.d("DebugFragmentTransaction", "Navigating to ChatFragment with initial message: " + initialMessage);
                                 }
                             });
                         },
@@ -193,6 +197,8 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     }
 
     private void saveMessageAfterConversation(String conversationID, String messageText) {
+        Log.d("DebugSaveMessage", "Conversation ID used for message: " + conversationID);
+        Log.d("DebugSaveMessage", "Message content: " + messageText);
         Conversation conversationReference = Conversation.justId(conversationID);
 
         Message newMessage = Message.builder()

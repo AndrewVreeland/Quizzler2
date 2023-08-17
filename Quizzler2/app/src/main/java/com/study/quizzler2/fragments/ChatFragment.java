@@ -47,8 +47,10 @@ public class ChatFragment extends Fragment {
 
     public static ChatFragment newInstance(String initialMessage, String conversationID) {
         ChatFragment fragment = new ChatFragment();
-        fragment.initialMessage = initialMessage;
-        fragment.conversationID = conversationID;
+        Bundle args = new Bundle();
+        args.putString("initialMessage", initialMessage);
+        args.putString("conversationID", conversationID);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -78,6 +80,11 @@ public class ChatFragment extends Fragment {
 
         chatAPIClient = new ChatAPIClient(this);
 
+        if (getArguments() != null) {
+            initialMessage = getArguments().getString("initialMessage");
+            conversationID = getArguments().getString("conversationID");
+        }
+
         if (conversationID != null) {
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
@@ -102,7 +109,7 @@ public class ChatFragment extends Fragment {
             addToChat(initialMessage, LocalMessage.SENT_BY_ME, "user");
             addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
             isTypingMessageDisplayed = true;
-            chatAPIClient.callAPI(initialMessage, requireContext());
+            chatAPIClient.callAPI(initialMessage, conversationID, requireContext());
         }
 
         sendButton.setOnClickListener((v) -> {
@@ -113,7 +120,7 @@ public class ChatFragment extends Fragment {
                 addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
                 isTypingMessageDisplayed = true;
                 messageEditText.setText("");
-                chatAPIClient.callAPI(question, requireContext());
+                chatAPIClient.callAPI(question, conversationID, requireContext());
             }
         });
     }

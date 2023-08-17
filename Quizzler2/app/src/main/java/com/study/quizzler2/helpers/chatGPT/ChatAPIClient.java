@@ -2,6 +2,7 @@ package com.study.quizzler2.helpers.chatGPT;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -53,7 +54,9 @@ public class ChatAPIClient {
         chatAPI = retrofit.create(ChatAPI.class);
     }
 
-    public void callAPI(String question, Context context) {
+    public void callAPI(String question, String conversationID, Context context) {
+
+        Log.d("TraceID", "conversationID at [start of CALL API METHOD]: " + conversationID);
         // Prepare the messages list
         JSONArray messagesList = new JSONArray();
 
@@ -81,8 +84,7 @@ public class ChatAPIClient {
             // Add the new user's question to the messages list
             messagesList.put(new JSONObject().put("role", "user").put("content", question));
 
-            // Save the user's question to DynamoDB
-            String conversationID = "your_conversation_id_here";  // Fetch appropriate conversation ID dynamically
+            // Save the user's question to DynamoDB using the provided conversationID
             DatabaseHelper.saveMessageToDynamoDB(question, conversationID);
 
             // Prepare the API request JSON

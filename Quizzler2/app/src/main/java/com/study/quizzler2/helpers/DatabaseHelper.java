@@ -48,14 +48,17 @@ public class DatabaseHelper {
         // Use Amplify API to save the message
         Amplify.API.mutate(
                 ModelMutation.create(message),
-                success -> Log.i("Amplify", "Saved item: " + success.getData().getContent()),
+                success -> {
+                    if(success != null && success.getData() != null) {
+                        Log.i("Amplify", "Saved item: " + success.getData().getContent());
+                    } else {
+                        Log.e("DatabaseHelper", "Incomplete success response or data is null");
+                    }
+                },
                 error -> Log.e("Amplify", "Could not save item", error)
         );
     }
 
-    public static void saveMessageAfterConversation(String conversationID, String messageContent) {
-        saveMessageToDynamoDB(messageContent, conversationID);
-    }
 
     private static Temporal.Timestamp getCurrentAmplifyTimestamp() {
         return new Temporal.Timestamp(new Date());
