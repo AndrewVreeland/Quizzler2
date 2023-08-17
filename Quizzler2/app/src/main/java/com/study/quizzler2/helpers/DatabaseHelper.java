@@ -95,8 +95,14 @@ public class DatabaseHelper {
                 ModelQuery.list(Message.class, Message.CONVERSATION.eq(conversationId)),
                 response -> {
                     if (response.hasData()) {
+
                         List<Message> messagesList = StreamSupport.stream(response.getData().getItems().spliterator(), false)
                                 .collect(Collectors.toList());
+
+                        // Log each fetched message to verify retrieval
+                        for (Message message : messagesList) {
+                            Log.d("DatabaseHelper", "Fetched message: " + message.getContent());
+                        }
 
                         // Run the UI update code on the main thread using the provided Context
                         if (context instanceof Activity) {

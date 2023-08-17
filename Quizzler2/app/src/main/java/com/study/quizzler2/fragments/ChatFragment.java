@@ -110,7 +110,6 @@ public class ChatFragment extends Fragment {
             if (!question.isEmpty()) {
                 sendButton.setEnabled(false);
                 addToChat(question, LocalMessage.SENT_BY_ME, "user");
-                DatabaseHelper.saveMessageAfterConversation(conversationID, question); // Save the message to DynamoDB
                 addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
                 isTypingMessageDisplayed = true;
                 messageEditText.setText("");
@@ -148,7 +147,7 @@ public class ChatFragment extends Fragment {
 
         sendActualResponse(response.trim());
         sendButton.setEnabled(true);
-        DatabaseHelper.saveMessageToDynamoDB(response.trim(), conversationID != null ? conversationID : "fallbackID");
+        DatabaseHelper.saveMessageToDynamoDB(response.trim(), conversationID != null ? conversationID : "fallbackID"); // Save the bot's response
     }
 
     private void sendCustomGreetingMessage() {
