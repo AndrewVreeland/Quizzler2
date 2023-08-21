@@ -39,8 +39,9 @@ public class ChatFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private ChatAPIClient chatAPIClient;
     private List<Message> messagesList = new ArrayList<>();
-    private String conversationID; // Variable to store the conversation ID
-    private String initialMessage; // Variable to store the initial message
+    private String conversationID;
+    private String initialMessage;
+    private static String loggedInUsername;
     int messagePosition = 0;
 
     public ChatFragment() {
@@ -52,6 +53,7 @@ public class ChatFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString("initialMessage", initialMessage);
         args.putString("conversationID", conversationID);
+        args.putString("loggedInUsername", loggedInUsername);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,7 +75,7 @@ public class ChatFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         messageEditText = view.findViewById(R.id.message_edit_text);
         sendButton = view.findViewById(R.id.send_btn);
-
+        loggedInUsername = getArguments().getString("loggedInUsername");
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
         LinearLayoutManager llm = new LinearLayoutManager(requireContext());
@@ -160,7 +162,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void sendCustomGreetingMessage() {
-        String greetingMessage = "Hello user, here is the additional information you requested:";
+        String greetingMessage = "Hello " + loggedInUsername + ", here is the additional information you requested:";
         addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
     }
 

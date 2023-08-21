@@ -71,10 +71,17 @@ public class AuthHelper {
         });
     }
 
-    public void fetchAndLogUsername() {
+    public void fetchAndLogUsername(AuthResultCallback callback) {
         Amplify.Auth.fetchUserAttributes(
-                attributes -> Log.i("AuthDemo", "User attributes = " + attributes.toString()),
-                error -> Log.e("LoginFragment", "Error fetching current user: " + error.toString(), error));
+                attributes -> {
+                    String attributesString = attributes.toString(); // Convert the list to a string
+                    Log.i("AuthDemo", "User attributes = " + attributesString);
+                    callback.onResult(new AuthResult(true, attributesString)); // Pass the string as the message
+                },
+                error -> {
+                    Log.e("LoginFragment", "Error fetching current user: " + error.toString(), error);
+                    callback.onResult(new AuthResult(false, "Error fetching user attributes")); // Handle error case
+                });
     }
 
 }

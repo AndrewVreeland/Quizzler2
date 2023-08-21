@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -52,12 +51,12 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     private String mCurrentConversationID;
     private List<Conversation> conversations;
     private ConversationAdapter conversationAdapter;
-
+    private UserManager userManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-
+        userManager = new UserManager(requireContext());
         CircleMenu circleMenu = rootView.findViewById(R.id.circle_menu);
         textView = rootView.findViewById(R.id.homeFragmentTopTextView);
         progressBar = rootView.findViewById(R.id.progressBar);
@@ -100,7 +99,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
 
 
 
-        UserManager userManager = new UserManager(requireContext());
         AuthHelper authHelper = new AuthHelper((FragmentActivity) requireActivity(), userManager);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -141,14 +139,14 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                 learnMoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        createNewConversation();
+                        createNewConversation(userManager.getUsername());
                     }
                 });
             }
         }
     }
 
-    private void createNewConversation() {
+    private void createNewConversation(String username) {
         Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
             @Override
             public void accept(com.amplifyframework.auth.AuthUser authUser) {
@@ -178,7 +176,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                                     // Now navigate to the ChatFragment
                                     requireActivity().getSupportFragmentManager()
                                             .beginTransaction()
-                                            .replace(R.id.fragment_container, ChatFragment.newInstance(initialMessage, mCurrentConversationID))
+                                            .replace(R.id.fragment_container, ChatFragment.newInstance(initialMessage, mCurrentConversationID), username)
                                             .addToBackStack(null)
                                             .commit();
                                     Log.d("DebugFragmentTransaction", "Navigating to ChatFragment with initial message: " + initialMessage);

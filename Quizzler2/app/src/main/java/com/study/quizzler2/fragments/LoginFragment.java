@@ -11,23 +11,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.study.quizzler2.interfaces.AuthResultCallback;
 
 import androidx.fragment.app.Fragment;
 
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
 import com.study.quizzler2.helpers.authentification.AuthHelper;
+import com.study.quizzler2.helpers.authentification.AuthResult;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.utils.HandlerUtility;
 
 public class LoginFragment extends Fragment {
-
     private EditText usernameEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private UserManager userManager;
     private Context fragmentContext;
+    private AuthHelper authHelper;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        fragmentContext = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +65,22 @@ public class LoginFragment extends Fragment {
                 hideKeyboard(v);
                 v.clearFocus();
                 attemptLogin();
-                authHelper.fetchAndLogUsername();
+
+                // Implement the AuthResultCallback interface here
+                AuthResultCallback authResultCallback = new AuthResultCallback() {
+                    @Override
+                    public void onResult(AuthResult authResult) {
+                        if (authResult.isSuccess()) {
+                            // User attributes fetched successfully
+                            Log.d("LoginFragment", "User attributes: " + authResult.getMessage());
+                        } else {
+                            // Error fetching user attributes
+                            Log.e("LoginFragment", "Error fetching user attributes: " + authResult.getMessage());
+                        }
+                    }
+                };
+
+                authHelper.fetchAndLogUsername(authResultCallback);
             }
         });
         return rootView;
@@ -96,8 +119,13 @@ public class LoginFragment extends Fragment {
                                         getParentFragmentManager().beginTransaction()
                                                 .replace(R.id.fragment_container, new HomeFragment())
                                                 .commit();
-                                        HandlerUtility.runOnMainThread(() -> {
-                                            Toast.makeText(fragmentContext, "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (getContext() != null) {
+                                                    Toast.makeText(getContext(), "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
                                         });
                                     },
                                     error -> Log.e("LoginFragment", "Error fetching current user: " + error.toString(), error)
@@ -136,4 +164,3 @@ public class LoginFragment extends Fragment {
         }
     }
 }
-
