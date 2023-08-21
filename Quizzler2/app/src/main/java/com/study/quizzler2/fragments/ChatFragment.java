@@ -19,6 +19,8 @@ import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
 import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 import com.study.quizzler2.helpers.DatabaseHelper;
+import com.study.quizzler2.managers.UserManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -152,7 +154,8 @@ public class ChatFragment extends Fragment {
         removeTypingMessage();
 
         if (isFirstResponse) {
-            sendCustomGreetingMessage();
+            UserManager userManager = new UserManager(requireContext());
+            sendCustomGreetingMessage(userManager);
             isFirstResponse = false;
         }
 
@@ -161,9 +164,15 @@ public class ChatFragment extends Fragment {
         DatabaseHelper.saveMessageToDynamoDB(response.trim(), conversationID != null ? conversationID : "fallbackID"); // Save the bot's response
     }
 
-    private void sendCustomGreetingMessage() {
-        String greetingMessage = "Hello " + loggedInUsername + ", here is the additional information you requested:";
-        addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
+    private void sendCustomGreetingMessage(UserManager userManager) {
+        String loggedInUsername = userManager.getUsername();
+
+        if (loggedInUsername != null) {
+            String greetingMessage = "Hello " + loggedInUsername + ", here is the additional information you requested:";
+            addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
+        } else {
+            Log.e("HomeFragment", "Logged-in username is null");
+        }
     }
 
     private void sendActualResponse(String response) {
