@@ -28,8 +28,10 @@ public class ChatFragment extends Fragment {
 
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
+    private boolean isInitialMessageProcessed = false;
     private boolean isFirstResponse = true;
     private boolean isTypingMessageDisplayed = false;
+    private boolean shouldFetchMessages = false;
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
@@ -85,7 +87,7 @@ public class ChatFragment extends Fragment {
             conversationID = getArguments().getString("conversationID");
         }
 
-        if (conversationID != null) {
+        if (conversationID != null && shouldFetchMessages) {
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
                         if (messages != null) {
@@ -103,12 +105,15 @@ public class ChatFragment extends Fragment {
                         Log.e("ChatFragment", "Failed to fetch messages.", error);
                     }
             );
+            shouldFetchMessages = false; // Reset the flag
         }
 
-        if (initialMessage != null && !initialMessage.isEmpty()) {
+        if (initialMessage != null && !initialMessage.isEmpty() && !isInitialMessageProcessed) {
+            Log.d("ChatFragment", "Fetching initial message");
             addToChat(initialMessage, LocalMessage.SENT_BY_ME, "user");
             addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
             isTypingMessageDisplayed = true;
+            isInitialMessageProcessed = true;
             chatAPIClient.callAPI(initialMessage, conversationID, requireContext());
         }
 
@@ -135,10 +140,7 @@ public class ChatFragment extends Fragment {
                 isTypingMessageDisplayed = false;
             }
             messageList.add(new LocalMessage(message, sentBy, role));
-            Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size());
-            if(sentBy.equals(LocalMessage.SENT_BY_ME)) {
-                DatabaseHelper.saveMessageToDynamoDB(message, conversationID != null ? conversationID : "fallbackID");
-            }
+            Log.d("ChatFragment", "addToChat: messageList size = " + messageList.size() + message);
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         }

@@ -67,9 +67,9 @@ public class ChatAPIClient {
         try {
             // Add instructions to the messages list only for the first API call
             if (isFirstResponse) {
+                isFirstResponse = false;
                 messagesList.put(new JSONObject().put("role", "system").put("content", instruction3));
                 messagesList.put(new JSONObject().put("role", "system").put("content", instruction2));
-                isFirstResponse = false;
             }
 
             // Add instruction1 to every API call

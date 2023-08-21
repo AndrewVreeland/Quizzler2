@@ -135,20 +135,16 @@ public class HamburgerMenuHelper {
         // Add the new conversation to the local list.
         this.conversations.add(newConversation);
 
-        // Convert the new conversation to ConversationItem format
-        List<ConversationItem> newConversationItems = ConversationHelper.convertToConversationItemList(List.of(newConversation));
+        // Convert all conversations (including the new one) to ConversationItem format
+        List<ConversationItem> allConversationItems = ConversationHelper.convertToConversationItemList(this.conversations);
 
-        // Update the RecyclerView to reflect the addition of the new conversation
+        // Update the RecyclerView to reflect all conversations
         activity.runOnUiThread(() -> {
-            conversationAdapter.updateData(newConversationItems);
+            conversationAdapter.updateData(allConversationItems); // This should update and notify the adapter.
             NavigationView navigationView = activity.findViewById(R.id.nav_view);
             RecyclerView recyclerView = navigationView.findViewById(R.id.recyclerViewInDrawer);
             recyclerView.smoothScrollToPosition(conversationAdapter.getItemCount() - 1);
             Log.d("HamburgerMenuHelper", "Notifying adapter of data change after adding conversation...");
-            conversationAdapter.notifyDataSetChanged();
-
-            // Update the conversations in the HamburgerMenuHelper and notify the adapter
-            updateConversations(conversations);
         });
     }
 }

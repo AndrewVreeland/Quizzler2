@@ -104,6 +104,7 @@ public class DatabaseHelper {
 
                         // Log each fetched message to verify retrieval
                         for (Message message : messagesList) {
+                            Log.d("DatabaseHelper", "fetchMessagesForConversation called");
                             Log.d("DatabaseHelper", "Fetched message: " + message.getContent());
                         }
 
@@ -111,6 +112,7 @@ public class DatabaseHelper {
                         if (context instanceof Activity) {
                             ((Activity) context).runOnUiThread(() -> {
                                 onSuccess.accept(messagesList);
+
                             });
                         }
                     }
