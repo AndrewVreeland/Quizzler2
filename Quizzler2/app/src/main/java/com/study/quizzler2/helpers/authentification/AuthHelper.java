@@ -1,9 +1,15 @@
 package com.study.quizzler2.helpers.authentification;
 
+import static com.amplifyframework.core.Amplify.Auth;
+
 import android.app.Activity;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+
+import com.amplifyframework.auth.AuthUserAttribute;
+import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.cognito.result.AWSCognitoAuthSignOutResult;
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.fragments.LoginFragment;
@@ -26,7 +32,7 @@ public class AuthHelper {
 
     public void signOut() {
         // Your Amplify sign-out logic
-        Amplify.Auth.signOut(signOutResult -> {
+        Auth.signOut(signOutResult -> {
             if (signOutResult instanceof AWSCognitoAuthSignOutResult.CompleteSignOut
                     || signOutResult instanceof AWSCognitoAuthSignOutResult.PartialSignOut) {
 
@@ -52,7 +58,7 @@ public class AuthHelper {
         });
     }
     public void handleSignOut(AuthResultCallback callback) {
-        Amplify.Auth.signOut(signOutResult -> {
+        Auth.signOut(signOutResult -> {
             if (signOutResult instanceof AWSCognitoAuthSignOutResult.CompleteSignOut) {
                 callback.onResult(new AuthResult(true, "Signed out successfully."));
             } else if (signOutResult instanceof AWSCognitoAuthSignOutResult.PartialSignOut) {
@@ -64,4 +70,11 @@ public class AuthHelper {
             }
         });
     }
+
+    public void fetchAndLogUsername() {
+        Amplify.Auth.fetchUserAttributes(
+                attributes -> Log.i("AuthDemo", "User attributes = " + attributes.toString()),
+                error -> Log.e("LoginFragment", "Error fetching current user: " + error.toString(), error));
+    }
+
 }

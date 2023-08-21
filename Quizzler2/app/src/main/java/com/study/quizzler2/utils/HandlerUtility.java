@@ -38,4 +38,6 @@ public class HandlerUtility {
     public static void removeCallbacks(Runnable runnable) {
         MAIN_THREAD_HANDLER.removeCallbacks(runnable);
     }
+
+
 }

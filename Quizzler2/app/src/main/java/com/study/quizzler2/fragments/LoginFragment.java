@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.amplifyframework.core.Amplify;
 import com.study.quizzler2.R;
+import com.study.quizzler2.helpers.authentification.AuthHelper;
 import com.study.quizzler2.interfaces.ActionBarVisibility;
 import com.study.quizzler2.managers.UserManager;
 import com.study.quizzler2.utils.HandlerUtility;
@@ -26,13 +27,14 @@ public class LoginFragment extends Fragment {
     private EditText passwordEditText;
     private Button loginButton;
     private UserManager userManager;
+    private Context fragmentContext;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
-
+        fragmentContext = getContext();
         userManager = new UserManager(getContext());
-
+        AuthHelper authHelper = new AuthHelper(getActivity(), userManager);
         usernameEditText = rootView.findViewById(R.id.usernameEditText);
         passwordEditText = rootView.findViewById(R.id.passwordEditText);
         loginButton = rootView.findViewById(R.id.loginButton);
@@ -55,9 +57,9 @@ public class LoginFragment extends Fragment {
                 hideKeyboard(v);
                 v.clearFocus();
                 attemptLogin();
+                authHelper.fetchAndLogUsername();
             }
         });
-
         return rootView;
     }
 
@@ -94,9 +96,11 @@ public class LoginFragment extends Fragment {
                                         getParentFragmentManager().beginTransaction()
                                                 .replace(R.id.fragment_container, new HomeFragment())
                                                 .commit();
-                                        Toast.makeText(getContext(), "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                        HandlerUtility.runOnMainThread(() -> {
+                                            Toast.makeText(fragmentContext, "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                        });
                                     },
-                                    error -> Log.e("LoginFragment", "Error fetching current user: " + error.getMessage())
+                                    error -> Log.e("LoginFragment", "Error fetching current user: " + error.toString(), error)
                             );
                         } else {
                             // Handle cases like MultiFactorAuth or other additional sign-in steps
