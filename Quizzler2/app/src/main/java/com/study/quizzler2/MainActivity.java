@@ -139,4 +139,9 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
     public void showActionBar() {
         Objects.requireNonNull(getSupportActionBar()).show();
     }
+
+    public HamburgerMenuHelper getHamburgerMenuHelper() {
+        return hamburgerMenuHelper;
+    }
+
 }

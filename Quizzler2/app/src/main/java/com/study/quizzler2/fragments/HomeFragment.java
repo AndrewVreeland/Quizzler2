@@ -25,6 +25,7 @@ import com.amplifyframework.datastore.generated.model.Message;
 import com.amplifyframework.datastore.generated.model.User;
 import com.hitomi.cmlibrary.CircleMenu;
 import com.hitomi.cmlibrary.OnMenuSelectedListener;
+import com.study.quizzler2.MainActivity;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.ConversationAdapter;
 import com.study.quizzler2.helpers.DatabaseHelper;
@@ -97,8 +98,6 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                     }
                 });
 
-
-
         AuthHelper authHelper = new AuthHelper((FragmentActivity) requireActivity(), userManager);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -108,8 +107,8 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
         // Initialize the conversationAdapter here
         conversationAdapter = new ConversationAdapter(conversationItems, null);
 
-        // Initialize the hamburgerMenuHelper
-        hamburgerMenuHelper = new HamburgerMenuHelper(activity, drawerLayout, authHelper, conversations, conversationAdapter);
+        // Use the initialized hamburgerMenuHelper from MainActivity
+        hamburgerMenuHelper = ((MainActivity) requireActivity()).getHamburgerMenuHelper();
 
         return rootView;
     }
@@ -147,30 +146,27 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     }
 
     private void createNewConversation(String username) {
-        Amplify.Auth.getCurrentUser(new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthUser>() {
-            @Override
-            public void accept(com.amplifyframework.auth.AuthUser authUser) {
-                User userObj = User.justId(authUser.getUserId());
-                ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
+        Amplify.Auth.getCurrentUser(
+                authUser -> {
+                    User userObj = User.justId(authUser.getUserId());
+                    ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
-                Log.d("DebugUserObject", "User Object ID: " + userObj.getId());
-                Conversation conversation = Conversation.builder()
-                        .user(userObj)
-                        .conversationType(conversationType)
-                        .build();
-                Log.d("DebugConversation", "Conversation Object: " + conversation.toString());
-                Amplify.API.mutate(
-                        ModelMutation.create(conversation),
-                        response -> {
-                            Log.d("DebugAPIResponse", "Full API Response: " + response.toString());
-                            Log.d("DebugAPIResponse", "Returned Conversation ID: " + response.getData().getId());
-                            mCurrentConversationID = response.getData().getId();
-                            String initialMessage = "I want to learn more about \"" + textView.getText().toString() + "\".";
-                            saveMessageAfterConversation(mCurrentConversationID, initialMessage);
+                    Log.d("DebugUserObject", "User Object ID: " + userObj.getId());
+                    Conversation conversation = Conversation.builder()
+                            .user(userObj)
+                            .conversationType(conversationType)
+                            .build();
+                    Log.d("DebugConversation", "Conversation Object: " + conversation.toString());
+                    Amplify.API.mutate(
+                            ModelMutation.create(conversation),
+                            response -> {
+                                Log.d("DebugAPIResponse", "Full API Response: " + response.toString());
+                                Log.d("DebugAPIResponse", "Returned Conversation ID: " + response.getData().getId());
+                                mCurrentConversationID = response.getData().getId();
+                                String initialMessage = "I want to learn more about \"" + textView.getText().toString() + "\".";
+                                saveMessageAfterConversation(mCurrentConversationID, initialMessage);
 
-                            requireActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
+                                requireActivity().runOnUiThread(() -> {
                                     hamburgerMenuHelper.addConversation(conversation);
 
                                     // Now navigate to the ChatFragment
@@ -180,18 +176,15 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                                             .addToBackStack(null)
                                             .commit();
                                     Log.d("DebugFragmentTransaction", "Navigating to ChatFragment with initial message: " + initialMessage);
-                                }
-                            });
-                        },
-                        error -> Log.e("CreateConversation", "Failed to create conversation.", error)
-                );
-            }
-        }, new com.amplifyframework.core.Consumer<com.amplifyframework.auth.AuthException>() {
-            @Override
-            public void accept(@NonNull com.amplifyframework.auth.AuthException authException) {
-                Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
-            }
-        });
+                                });
+                            },
+                            error -> Log.e("CreateConversation", "Failed to create conversation.", error)
+                    );
+                },
+                authException -> {
+                    Log.e("GetCurrentUser", "Failed to retrieve current user.", authException);
+                }
+        );
     }
 
     private void saveMessageAfterConversation(String conversationID, String messageText) {
