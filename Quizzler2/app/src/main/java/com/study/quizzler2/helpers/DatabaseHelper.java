@@ -93,31 +93,16 @@ public class DatabaseHelper {
     }
 
     public static void fetchMessagesForConversation(Context context, String conversationId, Consumer<List<Message>> onSuccess, Consumer<Throwable> onError) {
-        // Query messages based on the conversationID
         Amplify.API.query(
                 ModelQuery.list(Message.class, Message.CONVERSATION.eq(conversationId)),
                 response -> {
                     if (response.hasData()) {
-
                         List<Message> messagesList = StreamSupport.stream(response.getData().getItems().spliterator(), false)
                                 .collect(Collectors.toList());
 
-                        // Log each fetched message to verify retrieval
-                        for (Message message : messagesList) {
-                            Log.d("DatabaseHelper", "fetchMessagesForConversation called");
-                            Log.d("DatabaseHelper", "Fetched message: " + message.getContent());
-                        }
+                        onSuccess.accept(messagesList); // Pass fetched messages to the consumer
 
-                        // Run the UI update code on the main thread using the provided Context
-                        if (context instanceof Activity) {
-                            ((Activity) context).runOnUiThread(() -> {
-                                onSuccess.accept(messagesList);
-
-                            });
-                        }
-                    }
-
-                    if (response.hasErrors()) {
+                    } else if (response.hasErrors()) {
                         for (GraphQLResponse.Error error : response.getErrors()) {
                             Log.e("Amplify", error.getMessage());
                         }
@@ -125,7 +110,7 @@ public class DatabaseHelper {
                 },
                 failure -> {
                     Log.e("Amplify", "Query failed.", failure);
-                    onError.accept(failure);
+                    onError.accept(failure); // Pass error to the consumer
                 }
         );
     }

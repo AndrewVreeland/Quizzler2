@@ -109,6 +109,7 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
 
         // Use the initialized hamburgerMenuHelper from MainActivity
         hamburgerMenuHelper = ((MainActivity) requireActivity()).getHamburgerMenuHelper();
+        Log.d("HamburgerDebug", "HomeFragment - onCreateView - hamburgerMenuHelper: " + hamburgerMenuHelper);
 
         return rootView;
     }
@@ -148,6 +149,8 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
     private void createNewConversation(String username) {
         Amplify.Auth.getCurrentUser(
                 authUser -> {
+                    Log.d("HamburgerDebug", "Fragment Transition - hamburgerMenuHelper: " + hamburgerMenuHelper);
+                    Log.d("HomeFragment", "getCurrentUser success");
                     User userObj = User.justId(authUser.getUserId());
                     ConversationTypeEnum conversationType = TopicUtility.getEnumFromCategory(currentCategory);
 
@@ -167,7 +170,11 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                                 saveMessageAfterConversation(mCurrentConversationID, initialMessage);
 
                                 requireActivity().runOnUiThread(() -> {
-                                    hamburgerMenuHelper.addConversation(conversation);
+                                    if (hamburgerMenuHelper != null) {
+                                        hamburgerMenuHelper.addConversation(conversation, hamburgerMenuHelper);
+                                    } else {
+                                        Log.e("HomeFragment", "HamburgerMenuHelper is null");
+                                    }
 
                                     // Now navigate to the ChatFragment
                                     requireActivity().getSupportFragmentManager()

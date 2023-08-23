@@ -98,9 +98,11 @@ public class MainActivity extends AppCompatActivity implements ActionBarVisibili
 
                         // Initialize or update the conversations in the HamburgerMenuHelper
                         if (hamburgerMenuHelper == null) {
+                            Log.d("HamburgerDebug", "MainActivity - Initializing hamburgerMenuHelper");
                             hamburgerMenuHelper = new HamburgerMenuHelper(MainActivity.this, drawerLayout, authHelper, originalConversations, conversationAdapter);
                             hamburgerMenuHelper.setupNavigationView(navigationView);
                         } else {
+                            Log.d("HamburgerDebug", "MainActivity - Initializing hamburgerMenuHelper in else statement");
                             hamburgerMenuHelper.updateConversations(conversations);
                         }
                     });

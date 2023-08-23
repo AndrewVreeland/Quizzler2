@@ -33,7 +33,6 @@ public class ChatFragment extends Fragment {
     private boolean isInitialMessageProcessed = false;
     private boolean isFirstResponse = true;
     private boolean isTypingMessageDisplayed = false;
-    private boolean shouldFetchMessages = false;
     private RecyclerView recyclerView;
     private EditText messageEditText;
     private ImageButton sendButton;
@@ -91,10 +90,13 @@ public class ChatFragment extends Fragment {
             conversationID = getArguments().getString("conversationID");
         }
 
-        if (conversationID != null && shouldFetchMessages) {
+        if (conversationID != null) {
+            Log.d("ChatFragment", "Fetching old messages for conversation: " + conversationID);
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
                         if (messages != null) {
+                            Log.d("ChatFragment", "Fetched " + messages.size() + " old messages.");
+
                             for (Message message : messages) {
                                 messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
                                 messagePosition++;
@@ -106,10 +108,9 @@ public class ChatFragment extends Fragment {
                         }
                     },
                     error -> {
-                        Log.e("ChatFragment", "Failed to fetch messages.", error);
+                        Log.e("ChatFragment", "Failed to fetch old messages.", error);
                     }
             );
-            shouldFetchMessages = false; // Reset the flag
         }
 
         if (initialMessage != null && !initialMessage.isEmpty() && !isInitialMessageProcessed) {
@@ -189,7 +190,29 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    private void fetchMessagesAndDisplay(String conversationId) {
+        DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationId,
+                messages -> {
+                    if (messages != null) {
+                        messageList.clear(); // Clear the existing messages
+                        messagePosition = 0; // Reset the message position
 
+                        for (Message message : messages) {
+                            messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
+                            messagePosition++;
+                        }
+
+                        requireActivity().runOnUiThread(() -> {
+                            messageAdapter.notifyDataSetChanged();
+                            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+                        });
+                    }
+                },
+                error -> {
+                    Log.e("ChatFragment", "Failed to fetch messages.", error);
+                }
+        );
+    }
 
     public List<LocalMessage> getMessageList() {
         return messageList;

@@ -1,5 +1,7 @@
 package com.study.quizzler2.helpers.chatGPT;
 
+import android.util.Log;
+
 import com.amplifyframework.datastore.generated.model.Message;
 
 public class LocalMessage {
@@ -19,6 +21,8 @@ public class LocalMessage {
 
     public static LocalMessage fromAmplifyMessageBySequence(Message amplifyMessage, int position) {
         String sentBy;
+
+        Log.d("LocalMessage", "Processing message with content: " + amplifyMessage.getContent() + " at position: " + position);
 
         if (position == 0) { // first message
             sentBy = LocalMessage.SENT_BY_ME;

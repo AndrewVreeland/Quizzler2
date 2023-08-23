@@ -15,6 +15,7 @@ import com.study.quizzler2.adapters.ConversationAdapter;
 import com.study.quizzler2.fragments.ChatFragment;
 import com.study.quizzler2.fragments.LoginFragment;
 import com.study.quizzler2.helpers.authentification.AuthHelper;
+import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 import com.study.quizzler2.utils.ConversationItem;
 
 import java.util.List;
@@ -78,7 +79,10 @@ public class HamburgerMenuHelper {
                 case R.id.nav_logout:
                     handleLogout();
                     break;
-                // Handle other ids
+                default:
+                    // Handle conversation item clicks
+                    handleConversationItemClick(item.getItemId());
+                    break;
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
@@ -129,7 +133,8 @@ public class HamburgerMenuHelper {
         });
     }
 
-    public void addConversation(Conversation newConversation) {
+    public void addConversation(Conversation newConversation, HamburgerMenuHelper hamburgerMenuHelper) {
+        Log.d("HamburgerDebug", "HamburgerMenuHelper - addConversation - hamburgerMenuHelper: " + hamburgerMenuHelper);
         Log.d("HamburgerMenuHelper", "Adding new conversation...");
 
         // Add the new conversation to the local list.
@@ -147,4 +152,27 @@ public class HamburgerMenuHelper {
             Log.d("HamburgerMenuHelper", "Notifying adapter of data change after adding conversation...");
         });
     }
+
+    private void handleConversationItemClick(int conversationId) {
+        Log.d("HamburgerMenuHelper", "Handling conversation item click for conversation ID: " + conversationId);
+
+        DatabaseHelper.fetchMessagesForConversation(activity, String.valueOf(conversationId),
+                messages -> {
+                    if (messages != null) {
+                        Log.d("HamburgerMenuHelper", "Fetched " + messages.size() + " messages for conversation " + conversationId);
+                        List<LocalMessage> localMessages = DatabaseHelper.convertFetchedMessagesToLocal(messages);
+
+                        ChatFragment chatFragment = ChatFragment.newInstance(String.valueOf(localMessages), String.valueOf(conversationId));
+                        activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, chatFragment).commit();
+                    } else {
+                        Log.e("HamburgerMenuHelper", "Fetched messages is null for conversation " + conversationId);
+                    }
+                },
+                error -> {
+                    Log.e("HamburgerMenuHelper", "Failed to fetch messages for conversation " + conversationId, error);
+                }
+        );
+        drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selecting a conversation
+    }
+
 }
