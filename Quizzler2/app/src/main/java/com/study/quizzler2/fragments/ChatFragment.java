@@ -19,8 +19,6 @@ import com.study.quizzler2.adapters.MessageAdapter;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
 import com.study.quizzler2.helpers.chatGPT.LocalMessage;
 import com.study.quizzler2.helpers.DatabaseHelper;
-import com.study.quizzler2.managers.UserManager;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +28,7 @@ public class ChatFragment extends Fragment {
 
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
+    private boolean shouldFetchMessages = true;
     private boolean isInitialMessageProcessed = false;
     private boolean isFirstResponse = true;
     private boolean isTypingMessageDisplayed = false;
@@ -88,9 +87,10 @@ public class ChatFragment extends Fragment {
         if (getArguments() != null) {
             initialMessage = getArguments().getString("initialMessage");
             conversationID = getArguments().getString("conversationID");
+            shouldFetchMessages = getArguments().getBoolean("shouldFetchMessages", true); // Default value is true
         }
 
-        if (conversationID != null) {
+        if (shouldFetchMessages && conversationID != null) {
             Log.d("ChatFragment", "Fetching old messages for conversation: " + conversationID);
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
@@ -114,12 +114,17 @@ public class ChatFragment extends Fragment {
         }
 
         if (initialMessage != null && !initialMessage.isEmpty() && !isInitialMessageProcessed) {
-            Log.d("ChatFragment", "Fetching initial message");
-            addToChat(initialMessage, LocalMessage.SENT_BY_ME, "user");
-            addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
-            isTypingMessageDisplayed = true;
-            isInitialMessageProcessed = true;
-            chatAPIClient.callAPI(initialMessage, conversationID, requireContext());
+            if (shouldFetchMessages) {
+                // Fetching old messages, so don't process initial message
+                isInitialMessageProcessed = true;
+            } else {
+                Log.d("ChatFragment", "Fetching initial message");
+                addToChat(initialMessage, LocalMessage.SENT_BY_ME, "user");
+                addToChat("Typing...", LocalMessage.SENT_BY_BOT, "system");
+                isTypingMessageDisplayed = true;
+                isInitialMessageProcessed = true;
+                chatAPIClient.callAPI(initialMessage, conversationID, requireContext());
+            }
         }
 
         sendButton.setOnClickListener((v) -> {
@@ -155,8 +160,7 @@ public class ChatFragment extends Fragment {
         removeTypingMessage();
 
         if (isFirstResponse) {
-            UserManager userManager = new UserManager(requireContext());
-            sendCustomGreetingMessage(userManager);
+            sendCustomGreetingMessage();
             isFirstResponse = false;
         }
 
@@ -165,15 +169,9 @@ public class ChatFragment extends Fragment {
         DatabaseHelper.saveMessageToDynamoDB(response.trim(), conversationID != null ? conversationID : "fallbackID"); // Save the bot's response
     }
 
-    private void sendCustomGreetingMessage(UserManager userManager) {
-        String loggedInUsername = userManager.getUsername();
-
-        if (loggedInUsername != null) {
-            String greetingMessage = "Hello " + loggedInUsername + ", here is the additional information you requested:";
-            addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
-        } else {
-            Log.e("HomeFragment", "Logged-in username is null");
-        }
+    private void sendCustomGreetingMessage() {
+        String greetingMessage = "Hello " + loggedInUsername + ", here is the additional information you requested:";
+        addToChat(greetingMessage, LocalMessage.SENT_BY_BOT, "system");
     }
 
     private void sendActualResponse(String response) {

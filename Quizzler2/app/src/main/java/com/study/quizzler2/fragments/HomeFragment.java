@@ -44,6 +44,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements updateTriviaTextInterface.OnTextUpdateListener {
 
+
     private ProgressBar progressBar;
     private TextView textView;
     private Button learnMoreButton;
@@ -176,10 +177,16 @@ public class HomeFragment extends Fragment implements updateTriviaTextInterface.
                                         Log.e("HomeFragment", "HamburgerMenuHelper is null");
                                     }
 
-                                    // Now navigate to the ChatFragment
+                                    // Now navigate to the ChatFragment with the shouldFetchMessages flag set to false
+                                    Bundle args = new Bundle();
+                                    args.putString("initialMessage", initialMessage);
+                                    args.putString("conversationID", mCurrentConversationID);
+                                    args.putBoolean("shouldFetchMessages", false); // Set the flag here
+                                    ChatFragment chatFragment = new ChatFragment();
+                                    chatFragment.setArguments(args);
                                     requireActivity().getSupportFragmentManager()
                                             .beginTransaction()
-                                            .replace(R.id.fragment_container, ChatFragment.newInstance(initialMessage, mCurrentConversationID), username)
+                                            .replace(R.id.fragment_container, chatFragment, username)
                                             .addToBackStack(null)
                                             .commit();
                                     Log.d("DebugFragmentTransaction", "Navigating to ChatFragment with initial message: " + initialMessage);
