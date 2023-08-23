@@ -39,92 +39,92 @@ public class RandomFactAndChatTest {
 
     @Test
     public void randomFactAndChatTest() {
-         // Added a sleep statement to match the app's execution delay.
- // The recommended way to handle such scenarios is to use Espresso idling resources:
-  // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-try {
- Thread.sleep(500);
- } catch (InterruptedException e) {
- e.printStackTrace();
- }
-        
-        ViewInteraction appCompatEditText = onView(
-allOf(withId(R.id.usernameEditText),
-childAtPosition(
-childAtPosition(
-withId(R.id.fragment_container),
-0),
-0),
-isDisplayed()));
-        appCompatEditText.perform(replaceText("1234"), closeSoftKeyboard());
-        
-        ViewInteraction appCompatEditText2 = onView(
-allOf(withId(R.id.passwordEditText),
-childAtPosition(
-childAtPosition(
-withId(R.id.fragment_container),
-0),
-1),
-isDisplayed()));
-        appCompatEditText2.perform(replaceText("123456789"), closeSoftKeyboard());
-        
-        ViewInteraction materialButton = onView(
-allOf(withId(R.id.loginButton), withText("Login"),
-childAtPosition(
-childAtPosition(
-withId(R.id.fragment_container),
-0),
-2),
-isDisplayed()));
-        materialButton.perform(click());
-        
-         // Added a sleep statement to match the app's execution delay.
- // The recommended way to handle such scenarios is to use Espresso idling resources:
-  // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-try {
- Thread.sleep(500);
- } catch (InterruptedException e) {
- e.printStackTrace();
- }
-        
-        ViewInteraction materialButton2 = onView(
-allOf(withId(R.id.learn_more_btn), withText("Learn More"),
-childAtPosition(
-allOf(withId(R.id.constraint_layout),
-childAtPosition(
-withId(R.id.fragment_container),
-0)),
-2),
-isDisplayed()));
-        materialButton2.perform(click());
-        
-        ViewInteraction appCompatEditText3 = onView(
-allOf(withId(R.id.message_edit_text),
-childAtPosition(
-allOf(withId(R.id.message_layout),
-childAtPosition(
-withClassName(is("android.widget.RelativeLayout")),
-1)),
-0),
-isDisplayed()));
-        appCompatEditText3.perform(replaceText("tell me more please"), closeSoftKeyboard());
-        
-        ViewInteraction appCompatImageButton = onView(
-allOf(withId(R.id.send_btn),
-childAtPosition(
-allOf(withId(R.id.message_layout),
-childAtPosition(
-withClassName(is("android.widget.RelativeLayout")),
-1)),
-1),
-isDisplayed()));
-        appCompatImageButton.perform(click());
-        
-        pressBack();
-        
-        pressBack();
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-    
+
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.usernameEditText),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.fragment_container),
+                                        0),
+                                0),
+                        isDisplayed()));
+        appCompatEditText.perform(replaceText("1234"), closeSoftKeyboard());
+
+        ViewInteraction appCompatEditText2 = onView(
+                allOf(withId(R.id.passwordEditText),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.fragment_container),
+                                        0),
+                                1),
+                        isDisplayed()));
+        appCompatEditText2.perform(replaceText("123456789"), closeSoftKeyboard());
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.loginButton), withText("Login"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.fragment_container),
+                                        0),
+                                2),
+                        isDisplayed()));
+        materialButton.perform(click());
+
+        // Added a sleep statement to match the app's execution delay.
+        // The recommended way to handle such scenarios is to use Espresso idling resources:
+        // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ViewInteraction materialButton2 = onView(
+                allOf(withId(R.id.learn_more_btn), withText("Learn More"),
+                        childAtPosition(
+                                allOf(withId(R.id.constraint_layout),
+                                        childAtPosition(
+                                                withId(R.id.fragment_container),
+                                                0)),
+                                2),
+                        isDisplayed()));
+        materialButton2.perform(click());
+
+        ViewInteraction appCompatEditText3 = onView(
+                allOf(withId(R.id.message_edit_text),
+                        childAtPosition(
+                                allOf(withId(R.id.message_layout),
+                                        childAtPosition(
+                                                withClassName(is("android.widget.RelativeLayout")),
+                                                1)),
+                                0),
+                        isDisplayed()));
+        appCompatEditText3.perform(replaceText("tell me more please"), closeSoftKeyboard());
+
+        ViewInteraction appCompatImageButton = onView(
+                allOf(withId(R.id.send_btn),
+                        childAtPosition(
+                                allOf(withId(R.id.message_layout),
+                                        childAtPosition(
+                                                withClassName(is("android.widget.RelativeLayout")),
+                                                1)),
+                                1),
+                        isDisplayed()));
+        appCompatImageButton.perform(click());
+
+        pressBack();
+
+        pressBack();
+    }
+
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {
 
@@ -139,8 +139,8 @@ isDisplayed()));
             public boolean matchesSafely(View view) {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup)parent).getChildAt(position));
+                        && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
     }
-    }
+}

@@ -27,6 +27,13 @@ To run Quizzler2 on your local machine, follow these steps:
 2. Open the project in Android Studio.
 3. Build and run the app on an Android emulator or a physical device.
 
+## Testing 
+
+1. Open the project in Android Studio.
+2. Navigate to the app/src/test directory to access unit tests.
+3. Navigate to the app/src/androidTest directory to access UI tests.
+4. Right-click on a test file or package and select "Run" to execute the tests.
+
 ## Usage
 
 1. Launch the app and explore the available topics.
@@ -35,9 +42,12 @@ To run Quizzler2 on your local machine, follow these steps:
 4. Use the "Learn More" button to create new conversations and learn about different topics.
 
 ## Screenshots
-
-Include relevant screenshots here to showcase the app's interface and features.
-
+![Home Screen With Random Fact](../app/src/photos/Screenshot_20230823_153834.png)
+![Home Screen without Random Fact with menu open](../app/src/photos/Screenshot_20230823_153826.png)
+![Blank Home Screen everything closed](../app/src/photos/Screenshot_20230823_153822.png)
+![Sign Up](../app/src/photos/Screenshot_20230823_153750.png)
+![Login](../app/src/photos/Screenshot_20230823_153717.png)
+![Hamburger Menu with Old conversations](../app/src/photos/Screenshot_20230823_154246.png)
 ## Contributing
 
 Contributions to Quizzler2 are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
