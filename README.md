@@ -57,5 +57,3 @@ Contributions to Quizzler2 are welcome! If you find any issues or have suggestio
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-
-Feel free to customize the README template to match your app's specific details and requirements. You can add sections for troubleshooting, future enhancements, acknowledgments, and any other information you think might be valuable for users and developers.
