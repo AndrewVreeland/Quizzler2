@@ -1,5 +1,6 @@
 package com.study.quizzler2.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,17 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amplifyframework.datastore.generated.model.Message;
 import com.study.quizzler2.R;
 import com.study.quizzler2.adapters.MessageAdapter;
+import com.study.quizzler2.helpers.DatabaseHelper;
 import com.study.quizzler2.helpers.chatGPT.ChatAPIClient;
 import com.study.quizzler2.helpers.chatGPT.LocalMessage;
-import com.study.quizzler2.helpers.DatabaseHelper;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import okhttp3.MediaType;
+
 
 public class ChatFragment extends Fragment {
-
-    public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private boolean shouldFetchMessages = true;
     private boolean isInitialMessageProcessed = false;
@@ -38,7 +38,6 @@ public class ChatFragment extends Fragment {
     private List<LocalMessage> messageList;
     private MessageAdapter messageAdapter;
     private ChatAPIClient chatAPIClient;
-    private List<Message> messagesList = new ArrayList<>();
     private String conversationID;
     private String initialMessage;
     private static String loggedInUsername;
@@ -58,16 +57,12 @@ public class ChatFragment extends Fragment {
         return fragment;
     }
 
-    // Overloaded method for newInstance
-    public static ChatFragment newInstance(String initialMessage) {
-        return newInstance(initialMessage, null);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -75,6 +70,7 @@ public class ChatFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         messageEditText = view.findViewById(R.id.message_edit_text);
         sendButton = view.findViewById(R.id.send_btn);
+        assert getArguments() != null;
         loggedInUsername = getArguments().getString("loggedInUsername");
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
@@ -94,22 +90,16 @@ public class ChatFragment extends Fragment {
             Log.d("ChatFragment", "Fetching old messages for conversation: " + conversationID);
             DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationID,
                     messages -> {
-                        if (messages != null) {
-                            Log.d("ChatFragment", "Fetched " + messages.size() + " old messages.");
+                        Log.d("ChatFragment", "Fetched " + messages.size() + " old messages.");
 
-                            for (Message message : messages) {
-                                messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
-                                messagePosition++;
-                            }
-
-                            requireActivity().runOnUiThread(() -> {
-                                messageAdapter.notifyDataSetChanged();
-                            });
+                        for (Message message : messages) {
+                            messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
+                            messagePosition++;
                         }
+
+                        requireActivity().runOnUiThread(() -> messageAdapter.notifyDataSetChanged());
                     },
-                    error -> {
-                        Log.e("ChatFragment", "Failed to fetch old messages.", error);
-                    }
+                    error -> Log.e("ChatFragment", "Failed to fetch old messages.", error)
             );
         }
 
@@ -140,6 +130,7 @@ public class ChatFragment extends Fragment {
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     void addToChat(String message, String sentBy, String role) {
         if (messageAdapter != null) {
             if (message == null || message.trim().isEmpty()) {
@@ -179,6 +170,7 @@ public class ChatFragment extends Fragment {
         Log.d("ChatFragment", "sendActualResponse: messageList size = " + messageList.size());
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void removeTypingMessage() {
         if (isTypingMessageDisplayed) {
             messageList.remove(messageList.size() - 1);
@@ -186,30 +178,6 @@ public class ChatFragment extends Fragment {
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         }
-    }
-
-    private void fetchMessagesAndDisplay(String conversationId) {
-        DatabaseHelper.fetchMessagesForConversation(requireContext(), conversationId,
-                messages -> {
-                    if (messages != null) {
-                        messageList.clear(); // Clear the existing messages
-                        messagePosition = 0; // Reset the message position
-
-                        for (Message message : messages) {
-                            messageList.add(LocalMessage.fromAmplifyMessageBySequence(message, messagePosition));
-                            messagePosition++;
-                        }
-
-                        requireActivity().runOnUiThread(() -> {
-                            messageAdapter.notifyDataSetChanged();
-                            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
-                        });
-                    }
-                },
-                error -> {
-                    Log.e("ChatFragment", "Failed to fetch messages.", error);
-                }
-        );
     }
 
     public List<LocalMessage> getMessageList() {
