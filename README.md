@@ -42,7 +42,7 @@ To run Quizzler2 on your local machine, follow these steps:
 4. Use the "Learn More" button to create new conversations and learn about different topics.
 
 ## Screenshots
-![Home Screen With Random Fact](../app/src/photos/Screenshot_20230823_153834.png)
+![Home Screen With Random Fact](Quizzler2/app/src/photos/Screenshot_20230823_153834.png)
 ![Home Screen without Random Fact with menu open](Quizzler2/app/src/photos/Screenshot_20230823_153826.png)
 ![Blank Home Screen everything closed](Quizzler2/app/src/photos/Screenshot_20230823_153822.png)
 ![Sign Up](Quizzler2/app/src/photos/Screenshot_20230823_153750.png)
