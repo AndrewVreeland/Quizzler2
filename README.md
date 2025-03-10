@@ -12,7 +12,7 @@ Welcome to Quizzler2! This Android app is designed to provide users with an inte
 ## Technologies Used
 
 - Android Studio: The app is developed using Android Studio, the official integrated development environment (IDE) for Android app development.
-- Java: The primary programming language used for developing Android apps.
+- Java
 - AWS Amplify: The app utilizes AWS Amplify, a framework for building scalable and secure cloud-powered applications. It integrates with AWS services for authentication, storage, and more.
 - GraphQL: The app communicates with the backend using GraphQL queries and mutations, enabling efficient data exchange.
 - RecyclerView: The app employs the RecyclerView widget to efficiently display lists of messages in the chat interface.
